@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="unknown_character">未実装キャラクター</string>
+    <string name="unknown_character_type">未実装タイプ</string>
+    <string name="age">年齢</string>
+    <string name="title_height">身長</string>
+    <string name="title_weight">体重</string>
+    <string name="title_birth">誕生日</string>
+    <string name="title_blood">血液型</string>
+    <string name="title_race">種族</string>
+    <string name="title_guild">ギルド</string>
+    <string name="title_fav">趣味</string>
+    <string name="title_position">位置</string>
+    <string name="title_comments">コメント</string>
+</resources>
