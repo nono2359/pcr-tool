@@ -44,7 +44,9 @@ jobs:
           PCR_RELEASE_STORE_PASSWORD: ${{ secrets.PCR_RELEASE_STORE_PASSWORD }}
           PCR_RELEASE_KEY_ALIAS: ${{ secrets.PCR_RELEASE_KEY_ALIAS }}
           PCR_RELEASE_KEY_PASSWORD: ${{ secrets.PCR_RELEASE_KEY_PASSWORD }}
-        run: ./gradlew assembleOfficialRelease --no-daemon --no-problems-report --max-workers=2
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleOfficialRelease --no-daemon --no-problems-report --max-workers=2
 
       - name: Prepare release asset
         run: cp app/build/outputs/apk/official/release/app-official-release.apk app-official-release.apk
