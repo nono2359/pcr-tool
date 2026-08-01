@@ -1,7 +1,6 @@
 package cn.wthee.pcrtool.utils
 
 import android.util.Log
-import cn.wthee.pcrtool.BuildConfig
 import cn.wthee.pcrtool.ui.MainActivity
 import com.tencent.bugly.crashreport.CrashReport
 import kotlinx.coroutines.CancellationException
@@ -18,9 +17,8 @@ object LogReportUtil {
      */
     fun upload(e: Exception, msg: String) {
         MainScope().launch {
-            if (BuildConfig.DEBUG) {
-                Log.e("LogReportUtil", "$msg\n${e.message}")
-            }
+            // Release版でも、利用者がADBで原因を確認できるよう端末ログへ記録する
+            Log.e("LogReportUtil", "$msg\n${e.message}", e)
             //排除协程取消异常、SQLite异常后上传
             if (e !is CancellationException && !(e.message?:"").contains("no such table")) {
                 val exception =

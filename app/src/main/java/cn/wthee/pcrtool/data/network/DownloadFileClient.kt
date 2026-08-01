@@ -29,7 +29,8 @@ val downloadFileClient = HttpClient(Android) {
 
     install(DefaultRequest) {
         // 应用版本
-        header(Constants.APP_VERSION, BuildConfig.VERSION_NAME)
+        // 元APIは x.y.z 形式のバージョンを想定するため、日本語版の接尾辞は送信しない
+        header(Constants.APP_VERSION, BuildConfig.VERSION_NAME.substringBefore("-jp"))
     }
 
 }

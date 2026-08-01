@@ -274,6 +274,15 @@ class OverviewScreenViewModel @Inject constructor(
                         title = release.tagName.removePrefix("v"),
                         url = asset.downloadUrl
                     )
+                } else if (release != null && asset != null) {
+                    // 最新版でも通知メニューを残し、バージョンとRelease情報を確認可能にする
+                    AppNotice(
+                        date = release.publishedAt,
+                        id = 1,
+                        message = release.body.ifBlank { release.name },
+                        title = BuildConfig.VERSION_NAME,
+                        url = asset.downloadUrl
+                    )
                 } else {
                     AppNotice(id = -3)
                 }
