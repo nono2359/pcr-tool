@@ -78,7 +78,8 @@ class MainActivity : ComponentActivity() {
         var dynamicColorOnFlag = true
         var autoTimeZone = true
         var r6Ids = listOf<Int>()
-        var regionType = RegionType.CN
+        // 日本語版では、地域設定がまだ保存されていない初回起動時に日本版を使用する。
+        var regionType = RegionType.JP
 
 
     }
@@ -136,7 +137,7 @@ class MainActivity : ComponentActivity() {
             dynamicColorOnFlag = preferences[SettingPreferencesKeys.SP_COLOR_STATE] != false
             autoTimeZone = preferences[SettingPreferencesKeys.SP_TIME_ZONE] != false
             regionType = RegionType.getByValue(
-                preferences[SettingPreferencesKeys.SP_DATABASE_TYPE] ?: RegionType.CN.value
+                preferences[SettingPreferencesKeys.SP_DATABASE_TYPE] ?: RegionType.JP.value
             )
         }
     }
