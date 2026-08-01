@@ -33,6 +33,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -577,12 +578,13 @@ private fun DbVersionContentItem(
                 bottom = Dimen.smallPadding,
             ),
             color = color,
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.bodyMedium.copy(fontFamily = FontFamily.Default),
         )
         CaptionText(
             text = content,
             textAlign = TextAlign.Start,
             style = MaterialTheme.typography.bodySmall,
+            fontFamily = FontFamily.Default,
             modifier = Modifier
                 .padding(
                     start = Dimen.mediumPadding,

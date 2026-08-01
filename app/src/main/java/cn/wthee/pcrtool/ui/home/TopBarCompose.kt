@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import androidx.lifecycle.LifecycleOwner
@@ -67,7 +68,7 @@ import cn.wthee.pcrtool.utils.Constants
 import cn.wthee.pcrtool.utils.Constants.DOWNLOAD_APK_NAME
 import cn.wthee.pcrtool.utils.FileUtil
 import cn.wthee.pcrtool.utils.ToastUtil
-import cn.wthee.pcrtool.utils.formatTime
+import cn.wthee.pcrtool.utils.formatGitHubReleaseTime
 import cn.wthee.pcrtool.utils.getString
 import cn.wthee.pcrtool.utils.joinQQGroup
 import cn.wthee.pcrtool.workers.FileDownloadWorker
@@ -380,15 +381,33 @@ private fun UpdateContent(
             )
         }
 
-        //日期
+        //更新日時
         CaptionText(
             text = stringResource(
-                id = R.string.release, appNotice.date.formatTime
-            )
+                id = R.string.release_date,
+                appNotice.date.formatGitHubReleaseTime
+            ),
+            fontFamily = FontFamily.Default
         )
 
         //内容
-        ColorText(text = appNotice.message)
+        val releaseMessage = appNotice.message
+            .replace(
+                "**Full Changelog**:",
+                stringResource(id = R.string.full_changelog_legacy)
+            )
+            .replace(Regex("\\*\\*(.+?)\\*\\*"), "$1")
+        ColorText(text = releaseMessage)
+
+        if (appNotice.detailUrl.isNotBlank()) {
+            IconTextButton(
+                icon = MainIconType.GITHUB_PROJECT,
+                text = stringResource(id = R.string.release_details),
+                onClick = {
+                    BrowserUtil.open(appNotice.detailUrl)
+                }
+            )
+        }
 
         //前往更新
         if (appNotice.id == 0) {

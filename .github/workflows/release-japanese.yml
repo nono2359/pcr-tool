@@ -14,6 +14,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Java 21
         uses: actions/setup-java@v4
@@ -54,4 +56,20 @@ jobs:
       - name: Publish GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "${GITHUB_REF_NAME}" app-official-release.apk --generate-notes --verify-tag
+        run: |
+          release_commit="$(git rev-list -n 1 "${GITHUB_REF_NAME}")"
+          summary_commit="${release_commit}"
+          if git log -1 --format='%s' "${release_commit}" | grep -q '^chore: release '; then
+            summary_commit="${release_commit}^"
+          fi
+          summary="$(git log -1 --format='%s' "${summary_commit}")"
+          previous_tag="$(git describe --tags --abbrev=0 "${release_commit}^" 2>/dev/null || true)"
+
+          if [ -n "${previous_tag}" ]; then
+            details_url="https://github.com/${GITHUB_REPOSITORY}/compare/${previous_tag}...${GITHUB_REF_NAME}"
+          else
+            details_url="https://github.com/${GITHUB_REPOSITORY}/commits/${GITHUB_REF_NAME}"
+          fi
+
+          printf '変更履歴：%s\n\n詳細：%s\n' "${summary}" "${details_url}" > release-notes.txt
+          gh release create "${GITHUB_REF_NAME}" app-official-release.apk --notes-file release-notes.txt --verify-tag

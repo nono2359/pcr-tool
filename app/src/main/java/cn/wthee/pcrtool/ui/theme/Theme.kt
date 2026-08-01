@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
+import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
@@ -17,7 +18,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
+import cn.wthee.pcrtool.R
 import cn.wthee.pcrtool.ui.MainActivity
 
 /**
@@ -70,6 +74,28 @@ private val LightColorPalette = lightColorScheme(
 //    outline = colorGray,
 )
 
+private val GenEiLateGoFontFamily = FontFamily(
+    Font(R.font.genei_latego_p_v2)
+)
+
+private fun Typography.withFontFamily(fontFamily: FontFamily) = Typography(
+    displayLarge = displayLarge.copy(fontFamily = fontFamily),
+    displayMedium = displayMedium.copy(fontFamily = fontFamily),
+    displaySmall = displaySmall.copy(fontFamily = fontFamily),
+    headlineLarge = headlineLarge.copy(fontFamily = fontFamily),
+    headlineMedium = headlineMedium.copy(fontFamily = fontFamily),
+    headlineSmall = headlineSmall.copy(fontFamily = fontFamily),
+    titleLarge = titleLarge.copy(fontFamily = fontFamily),
+    titleMedium = titleMedium.copy(fontFamily = fontFamily),
+    titleSmall = titleSmall.copy(fontFamily = fontFamily),
+    bodyLarge = bodyLarge.copy(fontFamily = fontFamily),
+    bodyMedium = bodyMedium.copy(fontFamily = fontFamily),
+    bodySmall = bodySmall.copy(fontFamily = fontFamily),
+    labelLarge = labelLarge.copy(fontFamily = fontFamily),
+    labelMedium = labelMedium.copy(fontFamily = fontFamily),
+    labelSmall = labelSmall.copy(fontFamily = fontFamily),
+)
+
 @SuppressLint("NewApi")
 @Composable
 fun PCRToolComposeTheme(
@@ -77,6 +103,9 @@ fun PCRToolComposeTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
+
+    val baseTypography = MaterialTheme.typography
+    val typography = baseTypography.withFontFamily(GenEiLateGoFontFamily)
 
     //启用动态色彩判断
     val dynamicColor =
@@ -91,6 +120,7 @@ fun PCRToolComposeTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
+        typography = typography,
         content = content,
         shapes = shapes
     )

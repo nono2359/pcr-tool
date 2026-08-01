@@ -15,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cn.wthee.pcrtool.R
@@ -121,6 +122,7 @@ fun FreeGachaItem(freeGachaInfo: FreeGachaInfo) {
             //结束日期
             CaptionText(
                 text = freeGachaInfo.endTime.formatTime.fixTimeZone,
+                fontFamily = FontFamily.Default,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(end = Dimen.mediumPadding, bottom = Dimen.mediumPadding)

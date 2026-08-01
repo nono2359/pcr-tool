@@ -53,6 +53,7 @@ import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -870,11 +871,13 @@ fun ExpandableHeader(
 
                 CaptionText(
                     text = startText,
+                    fontFamily = FontFamily.Default,
                     modifier = Modifier.padding(start = Dimen.smallPadding)
                 )
                 if (endText != null) {
                     CaptionText(
                         text = endText,
+                        fontFamily = FontFamily.Default,
                         modifier = Modifier.fillMaxWidth()
                     )
                 }

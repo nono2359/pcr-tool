@@ -26,6 +26,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -87,6 +88,7 @@ fun MainContentText(
     selectable: Boolean = false,
     maxLines: Int = Int.MAX_VALUE,
     textStyle: TextStyle = MaterialTheme.typography.bodyLarge,
+    fontFamily: FontFamily? = null,
 ) {
     val content: @Composable () -> Unit = {
         Text(
@@ -94,6 +96,7 @@ fun MainContentText(
             textAlign = textAlign,
             color = color,
             style = textStyle,
+            fontFamily = fontFamily,
             modifier = if (selectable) Modifier else modifier,
             overflow = TextOverflow.Ellipsis,
             maxLines = maxLines
@@ -214,11 +217,13 @@ fun CaptionText(
     textAlign: TextAlign = TextAlign.End,
     maxLines: Int = Int.MAX_VALUE,
     style: TextStyle = MaterialTheme.typography.bodySmall,
+    fontFamily: FontFamily? = null,
 ) {
     Text(
         text = text,
         textAlign = textAlign,
         color = color,
+        fontFamily = fontFamily,
         style = style,
         modifier = modifier,
         maxLines = maxLines,
@@ -365,6 +370,7 @@ fun CommonTitleContentText(
     titleTextStyle: TextStyle = MaterialTheme.typography.bodyMedium,
     titleHorizontalPadding: Dp = Dimen.mediumPadding,
     contentTextStyle: TextStyle = MaterialTheme.typography.bodyLarge,
+    contentFontFamily: FontFamily? = null,
 ) {
     Row(
         modifier = modifier.padding(
@@ -385,7 +391,8 @@ fun CommonTitleContentText(
         MainContentText(
             text = content,
             modifier = Modifier.weight(contentWeight),
-            textStyle = contentTextStyle
+            textStyle = contentTextStyle,
+            fontFamily = contentFontFamily
         )
     }
 }

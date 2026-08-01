@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
 import cn.wthee.pcrtool.R
 import cn.wthee.pcrtool.data.db.view.ClanBattleEvent
 import cn.wthee.pcrtool.data.db.view.ClanBattleInfo
@@ -99,6 +100,7 @@ private fun ClanBattleNoBossContent(clanBattleEvent: ClanBattleEvent) {
             //结束日期
             CaptionText(
                 text = clanBattleEvent.getFixedEndTime().fixTimeZone,
+                fontFamily = FontFamily.Default,
                 modifier = Modifier
                     .padding(end = Dimen.mediumPadding, bottom = Dimen.mediumPadding)
                     .fillMaxWidth()

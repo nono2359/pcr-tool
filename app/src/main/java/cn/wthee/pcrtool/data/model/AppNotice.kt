@@ -9,6 +9,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class AppNotice(
     val date: String = "",
+    val detailUrl: String = "",
     val file_url: String = "",
     var id: Int = -1,
     val img_url: String = "",

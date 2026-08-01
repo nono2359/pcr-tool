@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import cn.wthee.pcrtool.R
@@ -50,7 +51,8 @@ fun AttrList(
             contentWeight = 0.15f,
             titleTextStyle = MaterialTheme.typography.bodySmall,
             titleHorizontalPadding = Dimen.smallPadding,
-            contentTextStyle = MaterialTheme.typography.bodySmall
+            contentTextStyle = MaterialTheme.typography.bodySmall,
+            contentFontFamily = FontFamily.Default
         )
     }
 }

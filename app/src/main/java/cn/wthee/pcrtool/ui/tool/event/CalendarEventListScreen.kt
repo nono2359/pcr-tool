@@ -20,6 +20,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cn.wthee.pcrtool.R
@@ -198,6 +199,7 @@ fun CalendarEventItem(calendar: CalendarEvent) {
                 //结束日期
                 CaptionText(
                     text = calendar.endTime.formatTime.fixTimeZone,
+                    fontFamily = FontFamily.Default,
                     modifier = Modifier.fillMaxWidth()
                 )
             }

@@ -269,6 +269,7 @@ class OverviewScreenViewModel @Inject constructor(
                 ) {
                     AppNotice(
                         date = release.publishedAt,
+                        detailUrl = release.htmlUrl,
                         id = 0,
                         message = release.body.ifBlank { release.name },
                         title = release.tagName.removePrefix("v"),
@@ -278,6 +279,7 @@ class OverviewScreenViewModel @Inject constructor(
                     // 最新版でも通知メニューを残し、バージョンとRelease情報を確認可能にする
                     AppNotice(
                         date = release.publishedAt,
+                        detailUrl = release.htmlUrl,
                         id = 1,
                         message = release.body.ifBlank { release.name },
                         title = BuildConfig.VERSION_NAME,

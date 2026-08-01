@@ -85,6 +85,21 @@ val String.formatTime: String
         }
     }
 
+/** GitHub APIのISO 8601日時を端末のタイムゾーンで表示する。 */
+val String.formatGitHubReleaseTime: String
+    get() = try {
+        val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US).apply {
+            timeZone = TimeZone.getTimeZone("UTC")
+        }
+        val outputFormat = SimpleDateFormat("yyyy/MM/dd HH:mm", locale).apply {
+            timeZone = autoTimeZone
+        }
+        outputFormat.format(requireNotNull(inputFormat.parse(this)))
+    } catch (e: Exception) {
+        LogReportUtil.upload(e, "formatGitHubReleaseTime error: $this")
+        this
+    }
+
 /**
  * 截取日期年月日
  */
