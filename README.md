@@ -1,27 +1,109 @@
-## PCR Tool
+# PCR ツール 日本語版
 
-- 下载地址：[Release](https://github.com/wthee/pcr-tool/releases)
-- 资源获取工具：[Unity Texture Toolkit](https://github.com/esterTion/unity-texture-toolkit)
-- 竞技场查询数据：[公主连结Re: Dive Fan Club](https://pcrdfans.com)
-- 排行榜数据：[GameWith](https://gamewith.jp/pricone-re/article/show/93068)
-- 感谢大佬的开源项目！[静流笔记|ShizuruNotes](https://github.com/MalitsPlus/ShizuruNotes)
-- QQ 交流群：775966246
+「プリンセスコネクト！Re:Dive」の各種データを閲覧・検索するAndroidアプリ、[wthee/pcr-tool](https://github.com/wthee/pcr-tool) の非公式日本語版です。
 
-> 发现问题或者有任何建议，欢迎 [New Issue](https://github.com/wthee/pcr-tool/issues/new/choose)
+原版への敬意とライセンスを維持しながら、日本語リソース、専用のアプリID、独立した更新機能を追加しています。
 
-## 分支说明
+## ダウンロード
 
-- **master-compose** 主分支：新版本发布时，会更新该分支代码
-- **beta-compose** 测试分支（最新代码）：下一版本发布前，代码会提交至该分支
-- **pre-release** 预发布分支：下一版本发布前，修复影响使用 bug 时，会更新该分支，并重新发布
-- ~~master-xml 已废弃~~
+最新版は [GitHub Releases](https://github.com/nono2359/pcr-tool/releases/latest) からダウンロードできます。
 
-## 支持
+1. `app-official-release.apk` をダウンロードします。
+2. Android端末でAPKを開きます。
+3. 必要に応じて、ブラウザーまたはファイル管理アプリに「不明なアプリのインストール」を許可します。
 
-- [爱发电](https://ifdian.net/a/wthee)
+> 本アプリはGoogle Playでは配布していません。APKは必ずこのリポジトリのReleasesから取得してください。
 
-## 其他
+## 日本語版の主な変更
 
-- [使用的数据表](DATATABLE.md)
-- [更新记录](CHANGELOG.md)
-- [游戏数据](https://github.com/wthee/pcr-tool-sql-diff)
+- アプリ内文字列を日本語化
+- アプリ名を「PCR ツール」へ変更
+- 日本語版専用アプリID `jp.nono2359.pcrtool` を使用
+- ランチャーアイコンへ「JP」バッジを追加
+- 日本語版GitHub Releasesを使用した更新確認とAPK更新
+- GitHub Actionsによる署名済みRelease APKの自動作成
+- 原版APIとの互換性を維持した通信処理
+
+アプリIDが原版の `cn.wthee.pcrtool` と異なるため、原版と日本語版を同じ端末へインストールできます。
+
+## 更新方法
+
+新しい日本語版が公開されると、アプリ内の通知メニューに更新案内が表示されます。案内からAPKをダウンロードして上書き更新できます。
+
+自動更新が利用できない場合は、[Releases](https://github.com/nono2359/pcr-tool/releases) から最新版を手動でインストールしてください。
+
+## 対応環境
+
+- Android 6.0（API 23）以降
+- インターネット接続（一部のお知らせ・検索・更新機能）
+
+キャラクター・装備などの基本データはアプリ内データベースから表示されます。一部機能は原版のAPIや外部サービスを利用します。
+
+## ソースからビルド
+
+開発環境の目安：
+
+- JDK 21
+- Android SDK Platform 36
+- Android SDK Build Tools 36.0.0
+- Gradle Wrapper（リポジトリに同梱）
+
+Debug APKのビルド：
+
+```powershell
+git clone https://github.com/nono2359/pcr-tool.git
+cd pcr-tool
+git switch feature/japanese-localization
+```
+
+`app/src/main/java/cn/wthee/pcrtool/utils/PrivateConfig.kt` を作成します。Buglyを利用しない場合は空文字列で構いません。
+
+```kotlin
+package cn.wthee.pcrtool.utils
+
+object PrivateConfig {
+    const val BUGLY_KEY = ""
+}
+```
+
+その後、ビルドを実行します。
+
+```powershell
+.\gradlew.bat assembleOfficialDebug
+```
+
+生成先：
+
+```text
+app/build/outputs/apk/official/debug/app-official-debug.apk
+```
+
+Release版には署名設定が必要です。公開タグ `v*` のPush時には、GitHub Actionsが登録済みのRepository Secretsを使って署名済みAPKを作成します。
+
+## 不具合・提案
+
+日本語訳や日本語版固有の問題は、[Issues](https://github.com/nono2359/pcr-tool/issues/new/choose) からお知らせください。
+
+原版固有の仕様や問題については、まず[原版リポジトリ](https://github.com/wthee/pcr-tool)をご確認ください。
+
+## データ・関連プロジェクト
+
+- リソース取得ツール：[Unity Texture Toolkit](https://github.com/esterTion/unity-texture-toolkit)
+- アリーナ検索データ：[プリンセスコネクト！Re:Dive Fan Club](https://pcrdfans.com)
+- ランキングデータ：[GameWith](https://gamewith.jp/pricone-re/article/show/93068)
+- 参考プロジェクト：[静流筆記 | ShizuruNotes](https://github.com/MalitsPlus/ShizuruNotes)
+- ゲームデータ：[pcr-tool-sql-diff](https://github.com/wthee/pcr-tool-sql-diff)
+
+## ドキュメント
+
+- [更新履歴](CHANGELOG.md)
+- [使用しているデータテーブル](DATATABLE.md)
+- [開発に参加する方へ](CONTRIBUTING.md)
+
+## ライセンスと謝辞
+
+本プロジェクトは [Apache License 2.0](LICENSE) のもとで公開されています。
+
+原版 `pcr-tool` の作者・コントリビューター、および関連データやツールを公開されている皆様に感謝します。
+
+本プロジェクトは非公式ファンプロジェクトであり、Cygamesおよび「プリンセスコネクト！Re:Dive」の運営各社とは関係ありません。
