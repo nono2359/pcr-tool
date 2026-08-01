@@ -33,4 +33,16 @@
         android:strokeColor="@color/colorPrimary"
         android:strokeLineCap="round" />
   </group>
+  <!-- 日本語版を識別するJPバッジ -->
+  <path
+      android:fillColor="#E53935"
+      android:pathData="M176,166A26,26 0,1 0,176 218A26,26 0,1 0,176 166Z" />
+  <!-- J -->
+  <path
+      android:fillColor="#FFFFFF"
+      android:pathData="M158,179L172,179L172,195C172,203 168,207 161,207C156,207 152,204 151,200L156,197C157,200 158,202 161,202C165,202 166,200 166,195L166,185L158,185Z" />
+  <!-- P -->
+  <path
+      android:fillColor="#FFFFFF"
+      android:pathData="M176,179L186,179C193,179 196,183 196,189C196,195 193,199 186,199L182,199L182,207L176,207ZM182,185L182,194L186,194C189,194 190,192 190,189C190,186 189,185 186,185Z" />
 </vector>

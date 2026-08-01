@@ -12,3 +12,5 @@ local.properties
 /app/release/
 /app/official/
 /app/src/main/java/cn/wthee/pcrtool/utils/PrivateConfig.kt
+hs_err_pid*.log
+replay_pid*.log

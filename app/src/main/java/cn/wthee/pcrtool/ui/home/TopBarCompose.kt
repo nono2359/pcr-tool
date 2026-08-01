@@ -49,7 +49,6 @@ import cn.wthee.pcrtool.ui.components.ColorText
 import cn.wthee.pcrtool.ui.components.HeaderText
 import cn.wthee.pcrtool.ui.components.IconTextButton
 import cn.wthee.pcrtool.ui.components.LinearProgressCompose
-import cn.wthee.pcrtool.ui.components.MainButton
 import cn.wthee.pcrtool.ui.components.MainCard
 import cn.wthee.pcrtool.ui.components.MainIcon
 import cn.wthee.pcrtool.ui.components.MainText
@@ -115,7 +114,7 @@ fun TopBarCompose(
             )
 
             //异常时显示版本号
-            if (appUpdateData.id == -2) {
+            if (appUpdateData.id == -2 || appUpdateData.id == -3) {
                 CaptionText(text = "v" + BuildConfig.VERSION_NAME)
             }
 
@@ -154,6 +153,8 @@ fun TopBarCompose(
                             }
                         )
                     }
+
+                    -3 -> Unit
 
                     else -> {
                         //提示
@@ -391,9 +392,6 @@ private fun UpdateContent(
 
         //前往更新
         if (appNotice.id == 0) {
-            //github下载链接
-            val githubReleaseUrl = stringResource(id = R.string.apk_url, appNotice.title)
-
             FlowRow(
                 modifier = Modifier
                     .padding(
@@ -407,15 +405,6 @@ private fun UpdateContent(
                 //从GitHub下载
                 SubButton(
                     text = stringResource(id = R.string.download_apk_from_github),
-                    onClick = {
-                        downloadApk(githubReleaseUrl, context, updateApkDownloadState, owner)
-                    }
-                )
-
-                //从服务器下载
-                MainButton(
-                    text = stringResource(id = R.string.download_apk),
-                    containerColor = colorGreen,
                     onClick = {
                         downloadApk(appNotice.url, context, updateApkDownloadState, owner)
                     }

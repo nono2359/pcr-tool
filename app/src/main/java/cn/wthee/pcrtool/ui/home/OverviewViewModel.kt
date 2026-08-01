@@ -4,6 +4,7 @@ import androidx.compose.runtime.Immutable
 import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import cn.wthee.pcrtool.BuildConfig
 import cn.wthee.pcrtool.MyApplication
 import cn.wthee.pcrtool.data.db.repository.UnitRepository
 import cn.wthee.pcrtool.data.enums.OverviewType
@@ -17,7 +18,6 @@ import cn.wthee.pcrtool.database.AppBasicDatabaseUpdater
 import cn.wthee.pcrtool.ui.MainActivity
 import cn.wthee.pcrtool.ui.dataStoreMain
 import cn.wthee.pcrtool.ui.dataStoreSetting
-import cn.wthee.pcrtool.utils.Constants.SERVER_DOMAIN
 import cn.wthee.pcrtool.utils.editOrder
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.MainScope
@@ -256,11 +256,27 @@ class OverviewScreenViewModel @Inject constructor(
                 )
             }
 
-            //应用更新
+            // GitHub Releasesから日本語版の更新を確認
             try {
-                val data = apiRepository.getUpdateContent().data ?: AppNotice(id = -2)
-                //将下载链接中的域名，根据设置替换为ip
-                data.url = data.url.replace(SERVER_DOMAIN, MyApplication.URL_DOMAIN)
+                val release = apiRepository.getLatestJapaneseRelease()
+                val asset = release?.assets?.firstOrNull {
+                    it.name == "app-official-release.apk"
+                }
+                val data = if (release != null && asset != null && isNewerVersion(
+                        release.tagName,
+                        BuildConfig.VERSION_NAME
+                    )
+                ) {
+                    AppNotice(
+                        date = release.publishedAt,
+                        id = 0,
+                        message = release.body.ifBlank { release.name },
+                        title = release.tagName.removePrefix("v"),
+                        url = asset.downloadUrl
+                    )
+                } else {
+                    AppNotice(id = -3)
+                }
                 _uiState.update {
                     it.copy(
                         appUpdateData = data
@@ -274,6 +290,18 @@ class OverviewScreenViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    private fun isNewerVersion(remoteVersion: String, localVersion: String): Boolean {
+        val remoteParts = Regex("\\d+").findAll(remoteVersion).map { it.value.toInt() }.toList()
+        val localParts = Regex("\\d+").findAll(localVersion).map { it.value.toInt() }.toList()
+        val partCount = maxOf(remoteParts.size, localParts.size)
+        for (index in 0 until partCount) {
+            val remotePart = remoteParts.getOrElse(index) { 0 }
+            val localPart = localParts.getOrElse(index) { 0 }
+            if (remotePart != localPart) return remotePart > localPart
+        }
+        return false
     }
 
     /**

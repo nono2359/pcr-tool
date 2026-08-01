@@ -6,6 +6,7 @@ import cn.wthee.pcrtool.data.db.entity.NewsTable
 import cn.wthee.pcrtool.data.db.entity.TweetData
 import cn.wthee.pcrtool.data.model.AppNotice
 import cn.wthee.pcrtool.data.model.DatabaseVersion
+import cn.wthee.pcrtool.data.model.GitHubRelease
 import cn.wthee.pcrtool.data.model.KeywordData
 import cn.wthee.pcrtool.data.model.LeaderTierData
 import cn.wthee.pcrtool.data.model.LeaderboardData
@@ -21,6 +22,7 @@ import cn.wthee.pcrtool.utils.LogReportUtil
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import kotlinx.serialization.json.JsonArray
@@ -33,6 +35,16 @@ import kotlin.coroutines.cancellation.CancellationException
  * 接口请求
  */
 class ApiRepository @Inject constructor(private val client: HttpClient) {
+
+    suspend fun getLatestJapaneseRelease(): GitHubRelease? {
+        val response = client.get("https://api.github.com/repos/nono2359/pcr-tool/releases/latest")
+        // GitHubはReleaseが1件もない場合に404を返す。これは通信障害ではなく「更新なし」。
+        if (response.status.value == 404) return null
+        if (response.status.value !in 200..299) {
+            error("GitHub Releases API returned HTTP ${response.status.value}")
+        }
+        return response.body()
+    }
 
     /**
      * 请求异常捕获

@@ -12,9 +12,13 @@ hilt {
     enableAggregatingTask = true
 }
 
-val appVersionCode = 401
-val appVersionName = "4.0.1"
-val appId = "cn.wthee.pcrtool"
+val appVersionCode = 40101
+val appVersionName = "4.0.1-jp.1"
+val appId = "jp.nono2359.pcrtool"
+val releaseStoreFile = providers.environmentVariable("PCR_RELEASE_STORE_FILE")
+val releaseStorePassword = providers.environmentVariable("PCR_RELEASE_STORE_PASSWORD")
+val releaseKeyAlias = providers.environmentVariable("PCR_RELEASE_KEY_ALIAS")
+val releaseKeyPassword = providers.environmentVariable("PCR_RELEASE_KEY_PASSWORD")
 
 android {
 //    splits {
@@ -26,7 +30,8 @@ android {
 //        }
 //    }
 
-    namespace = appId
+    // Kotlin/Javaのpackageは維持し、インストール識別子だけ日本語版専用にする
+    namespace = "cn.wthee.pcrtool"
     compileSdk = 36
     buildToolsVersion = "36.0.0"
     flavorDimensions += listOf("version")
@@ -50,8 +55,20 @@ android {
         }
     }
 
+    signingConfigs {
+        create("release") {
+            if (releaseStoreFile.isPresent) {
+                storeFile = file(releaseStoreFile.get())
+                storePassword = releaseStorePassword.orNull
+                keyAlias = releaseKeyAlias.orNull
+                keyPassword = releaseKeyPassword.orNull
+            }
+        }
+    }
+
     buildTypes {
         getByName("release") {
+            signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
@@ -72,9 +89,9 @@ android {
 
     productFlavors {
         create("official") {
-            applicationId = "cn.wthee.pcrtool"
+            applicationId = appId
             dimension = "version"
-            resValue("string", "app_name", "PCR Tool")
+            resValue("string", "app_name", "PCR ツール")
             resValue("color", "colorPrimary", "#5690EF")
             resValue("color", "colorPrimaryDark", "#3F6BB3")
             buildConfigField("boolean", "DEBUG", "false")
