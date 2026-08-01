@@ -6,8 +6,9 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class GitHubRelease(
     @SerialName("tag_name") val tagName: String,
-    val name: String = "",
-    val body: String = "",
+    // GitHub Actionsでタイトルや本文を省略したReleaseでは明示的にnullが返る。
+    val name: String? = null,
+    val body: String? = null,
     @SerialName("html_url") val htmlUrl: String = "",
     @SerialName("published_at") val publishedAt: String = "",
     val assets: List<GitHubReleaseAsset> = emptyList()

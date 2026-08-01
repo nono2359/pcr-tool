@@ -72,4 +72,7 @@ jobs:
           fi
 
           printf '変更履歴：%s\n\n詳細：%s\n' "${summary}" "${details_url}" > release-notes.txt
-          gh release create "${GITHUB_REF_NAME}" app-official-release.apk --notes-file release-notes.txt --verify-tag
+          gh release create "${GITHUB_REF_NAME}" app-official-release.apk \
+            --title "PCR ツール ${GITHUB_REF_NAME}" \
+            --notes-file release-notes.txt \
+            --verify-tag

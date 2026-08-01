@@ -23,8 +23,10 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.get
+import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import io.ktor.http.HttpHeaders
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
@@ -37,7 +39,12 @@ import kotlin.coroutines.cancellation.CancellationException
 class ApiRepository @Inject constructor(private val client: HttpClient) {
 
     suspend fun getLatestJapaneseRelease(): GitHubRelease? {
-        val response = client.get("https://api.github.com/repos/nono2359/pcr-tool/releases/latest")
+        val response = client.get("https://api.github.com/repos/nono2359/pcr-tool/releases/latest") {
+            // GitHub REST APIは有効なUser-Agentを持たないリクエストを拒否する。
+            header(HttpHeaders.UserAgent, "PCR-Tool-Japanese/${BuildConfig.VERSION_NAME}")
+            header(HttpHeaders.Accept, "application/vnd.github+json")
+            header("X-GitHub-Api-Version", "2022-11-28")
+        }
         // GitHubはReleaseが1件もない場合に404を返す。これは通信障害ではなく「更新なし」。
         if (response.status.value == 404) return null
         if (response.status.value !in 200..299) {

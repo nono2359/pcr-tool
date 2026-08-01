@@ -18,6 +18,7 @@ import cn.wthee.pcrtool.database.AppBasicDatabaseUpdater
 import cn.wthee.pcrtool.ui.MainActivity
 import cn.wthee.pcrtool.ui.dataStoreMain
 import cn.wthee.pcrtool.ui.dataStoreSetting
+import cn.wthee.pcrtool.utils.LogReportUtil
 import cn.wthee.pcrtool.utils.editOrder
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.MainScope
@@ -262,6 +263,9 @@ class OverviewScreenViewModel @Inject constructor(
                 val asset = release?.assets?.firstOrNull {
                     it.name == "app-official-release.apk"
                 }
+                val releaseMessage = release?.body.orEmpty().ifBlank {
+                    release?.name.orEmpty().ifBlank { release?.tagName.orEmpty() }
+                }
                 val data = if (release != null && asset != null && isNewerVersion(
                         release.tagName,
                         BuildConfig.VERSION_NAME
@@ -271,7 +275,7 @@ class OverviewScreenViewModel @Inject constructor(
                         date = release.publishedAt,
                         detailUrl = release.htmlUrl,
                         id = 0,
-                        message = release.body.ifBlank { release.name },
+                        message = releaseMessage,
                         title = release.tagName.removePrefix("v"),
                         url = asset.downloadUrl
                     )
@@ -281,7 +285,7 @@ class OverviewScreenViewModel @Inject constructor(
                         date = release.publishedAt,
                         detailUrl = release.htmlUrl,
                         id = 1,
-                        message = release.body.ifBlank { release.name },
+                        message = releaseMessage,
                         title = BuildConfig.VERSION_NAME,
                         url = asset.downloadUrl
                     )
@@ -294,6 +298,7 @@ class OverviewScreenViewModel @Inject constructor(
                     )
                 }
             } catch (e: Exception) {
+                LogReportUtil.upload(e, "GitHub release check failed")
                 _uiState.update {
                     it.copy(
                         appUpdateData = AppNotice(id = -2)
