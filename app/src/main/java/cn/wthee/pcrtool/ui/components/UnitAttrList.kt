@@ -43,7 +43,15 @@ fun AttrList(
     ) {
         val attr = attrs[it]
         val valueText = fixedAttrValueText(attr.value, attrValueType)
-        CommonTitleContentText(title = attr.title, content = valueText)
+        CommonTitleContentText(
+            title = attr.title,
+            content = valueText,
+            titleWeight = 0.35f,
+            contentWeight = 0.15f,
+            titleTextStyle = MaterialTheme.typography.bodySmall,
+            titleHorizontalPadding = Dimen.smallPadding,
+            contentTextStyle = MaterialTheme.typography.bodySmall
+        )
     }
 }
 

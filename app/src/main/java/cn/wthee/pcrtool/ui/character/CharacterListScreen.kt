@@ -460,19 +460,28 @@ fun SharedTransitionScope.CharacterItemContent(
                         ) {
                             //年龄
                             Subtitle2(
-                                text = characterInfo.age.fixedStr,
+                                text = stringResource(
+                                    id = R.string.age_value,
+                                    characterInfo.age.fixedStr
+                                ),
                                 fontWeight = FontWeight.Bold,
                                 color = textColor
                             )
                             //体重
                             Subtitle2(
-                                text = "${characterInfo.weight.fixedStr} KG",
+                                text = stringResource(
+                                    id = R.string.weight_value,
+                                    characterInfo.weight.fixedStr
+                                ),
                                 fontWeight = FontWeight.Bold,
                                 color = textColor
                             )
                             //身高
                             Subtitle2(
-                                text = "${characterInfo.height.fixedStr} CM",
+                                text = stringResource(
+                                    id = R.string.height_value,
+                                    characterInfo.height.fixedStr
+                                ),
                                 fontWeight = FontWeight.Bold,
                                 color = textColor
                             )

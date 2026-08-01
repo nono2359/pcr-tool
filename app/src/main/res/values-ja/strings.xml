@@ -5,8 +5,11 @@
     <string name="unknown_character">未実装キャラ</string>
     <string name="unknown_character_type">未実装（%s）</string>
     <string name="age">年齢</string>
+    <string name="age_value">%s歳</string>
     <string name="title_height">身長</string>
+    <string name="height_value">%s cm</string>
     <string name="title_weight">体重</string>
+    <string name="weight_value">%s kg</string>
     <string name="title_birth">誕生日</string>
     <string name="title_blood">血液型</string>
     <string name="title_race">種族</string>
@@ -235,14 +238,14 @@
     <string name="tip_github">プロジェクトのオープンソース コード</string>
     <string name="mode">MODE%d</string>
     <string name="clan_battle_y_m">%s年 %s月</string>
-    <string name="update">更新する</string>
+    <string name="update">アップデート</string>
     <string name="system">システム</string>
     <string name="event">イベント</string>
     <string name="shop">グッズ</string>
     <string name="local_note">ローカライズされたメモ</string>
     <string name="search_suggestion">素早い入力</string>
     <string name="search_api">外部サイト</string>
-    <string name="search_api_desc">ネットワークが必要です</string>
+    <string name="search_api_desc">ネットワーク接続が必要です</string>
     <string name="tool_all_quest">メインクエストマップ</string>
     <string name="pick_date">日付を選択してください</string>
     <string name="picked_date">選択済み</string>
@@ -358,8 +361,8 @@
 
     <!-- ガチャシミュレーター -->
     <string name="limit_re">限定復刻</string>
-    <string name="limit_re_pick">限定復刻選択</string>
-    <string name="limit_pick">限定選択</string>
+    <string name="limit_re_pick">限定復刻セレクト</string>
+    <string name="limit_pick">限定セレクト</string>
     <string name="normal_re">恒常復刻</string>
     <string name="fes">プリンセスフェス</string>
     <string name="anv">周年</string>
@@ -367,13 +370,13 @@
     <string name="gacha_limit">限定★3</string>
     <string name="gacha_normal">恒常★3</string>
     <string name="tool_mock_gacha">ガチャシミュレーター</string>
-    <string name="gacha_pick_up_normal">全キャラUP</string>
-    <string name="gacha_pick_up_fes">Fes UP</string>
-    <string name="gacha_pick_up_single">単体キャラUP</string>
+    <string name="gacha_pick_up_normal">全キャラPU</string>
+    <string name="gacha_pick_up_fes">Fes PU</string>
+    <string name="gacha_pick_up_single">単体キャラPU</string>
     <string name="tip_to_pick_up">キャラを選択してください</string>
     <string name="tip_to_pick_up_normal">選択したキャラの確率は同じです</string>
     <string name="tip_to_pick_up_single">最後に選択したキャラのみ確率が増加します</string>
-    <string name="tip_to_mock_single">単体UP：2人以上選択してください</string>
+    <string name="tip_to_mock_single">単体PU：2人以上選択してください</string>
     <string name="tip_no_gacha_record">ガチャ履歴はありません</string>
     <string name="reset_record">ガチャ履歴をリセット</string>
     <string name="delete_gacha">ガチャを削除</string>

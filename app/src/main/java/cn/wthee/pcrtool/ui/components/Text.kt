@@ -52,6 +52,7 @@ fun MainTitleText(
     text: String,
     backgroundColor: Color = MaterialTheme.colorScheme.primary,
     textStyle: TextStyle = MaterialTheme.typography.bodyMedium,
+    horizontalPadding: Dp = Dimen.mediumPadding,
     maxLines: Int = Int.MAX_VALUE,
     selectable: Boolean = false
 ) {
@@ -63,7 +64,7 @@ fun MainTitleText(
             maxLines = maxLines,
             modifier = (if (selectable) Modifier else modifier)
                 .background(color = backgroundColor, shape = MaterialTheme.shapes.extraSmall)
-                .padding(start = Dimen.mediumPadding, end = Dimen.mediumPadding),
+                .padding(horizontal = horizontalPadding),
         )
     }
 
@@ -84,14 +85,15 @@ fun MainContentText(
     color: Color = MaterialTheme.colorScheme.onSurface,
     textAlign: TextAlign = TextAlign.End,
     selectable: Boolean = false,
-    maxLines: Int = Int.MAX_VALUE
+    maxLines: Int = Int.MAX_VALUE,
+    textStyle: TextStyle = MaterialTheme.typography.bodyLarge,
 ) {
     val content: @Composable () -> Unit = {
         Text(
             text = text,
             textAlign = textAlign,
             color = color,
-            style = MaterialTheme.typography.bodyLarge,
+            style = textStyle,
             modifier = if (selectable) Modifier else modifier,
             overflow = TextOverflow.Ellipsis,
             maxLines = maxLines
@@ -354,7 +356,16 @@ fun CenterTipText(text: String, content: (@Composable () -> Unit)? = null) {
  * 通用标题内容组件，用例：角色属性
  */
 @Composable
-fun CommonTitleContentText(modifier: Modifier = Modifier, title: String, content: String) {
+fun CommonTitleContentText(
+    modifier: Modifier = Modifier,
+    title: String,
+    content: String,
+    titleWeight: Float = 0.3f,
+    contentWeight: Float = 0.2f,
+    titleTextStyle: TextStyle = MaterialTheme.typography.bodyMedium,
+    titleHorizontalPadding: Dp = Dimen.mediumPadding,
+    contentTextStyle: TextStyle = MaterialTheme.typography.bodyLarge,
+) {
     Row(
         modifier = modifier.padding(
             top = Dimen.smallPadding,
@@ -366,12 +377,15 @@ fun CommonTitleContentText(modifier: Modifier = Modifier, title: String, content
         MainTitleText(
             text = title,
             modifier = Modifier
-                .weight(0.3f),
+                .weight(titleWeight),
+            textStyle = titleTextStyle,
+            horizontalPadding = titleHorizontalPadding,
             maxLines = 1
         )
         MainContentText(
             text = content,
-            modifier = Modifier.weight(0.2f)
+            modifier = Modifier.weight(contentWeight),
+            textStyle = contentTextStyle
         )
     }
 }

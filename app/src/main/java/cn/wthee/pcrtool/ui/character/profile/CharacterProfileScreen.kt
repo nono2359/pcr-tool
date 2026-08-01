@@ -133,9 +133,15 @@ fun CharacterProfileCommonContent(characterProfileInfo: CharacterProfileInfo) {
     //身高、体重
     TwoColumn(
         title0 = stringResource(id = R.string.title_height),
-        text0 = "${characterProfileInfo.height.fixedStr} CM",
+        text0 = stringResource(
+            id = R.string.height_value,
+            characterProfileInfo.height.fixedStr
+        ),
         title1 = stringResource(id = R.string.title_weight),
-        text1 = "${characterProfileInfo.weight.fixedStr} KG"
+        text1 = stringResource(
+            id = R.string.weight_value,
+            characterProfileInfo.weight.fixedStr
+        )
     )
     //生日、年龄
     TwoColumn(
@@ -146,7 +152,10 @@ fun CharacterProfileCommonContent(characterProfileInfo: CharacterProfileInfo) {
             characterProfileInfo.birthDay.fixedStr
         ),
         title1 = stringResource(id = R.string.age),
-        text1 = characterProfileInfo.age.fixedStr
+        text1 = stringResource(
+            id = R.string.age_value,
+            characterProfileInfo.age.fixedStr
+        )
     )
     //血型、种族
     TwoColumn(

@@ -5,8 +5,11 @@
     <string name="unknown_character">角色暂未登场</string>
     <string name="unknown_character_type">未实装（%s）</string>
     <string name="age">年龄</string>
+    <string name="age_value">%s岁</string>
     <string name="title_height">身高</string>
+    <string name="height_value">%s cm</string>
     <string name="title_weight">体重</string>
+    <string name="weight_value">%s kg</string>
     <string name="title_birth">生日</string>
     <string name="title_blood">血型</string>
     <string name="title_race">种族</string>

@@ -95,7 +95,7 @@ fun MockGachaResult(
                 )
             ) {
                 MainTitleText(
-                    text = "UP：$upCount",
+                    text = "PU：$upCount",
                     backgroundColor = colorRed,
                     modifier = Modifier.padding(start = Dimen.smallPadding)
                 )

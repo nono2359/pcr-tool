@@ -142,7 +142,7 @@ private fun MockGachaHistoryItem(
                     modifier = Modifier
                         .padding(start = Dimen.smallPadding)
                         .align(Alignment.CenterVertically),
-                    text = "UP：$upCount",
+                    text = "PU：$upCount",
                     backgroundColor = colorRed
                 )
             }
