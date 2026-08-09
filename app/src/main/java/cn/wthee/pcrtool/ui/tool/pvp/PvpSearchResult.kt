@@ -84,7 +84,7 @@ fun PvpSearchResult(
             .background(MaterialTheme.colorScheme.surface)
     ) {
         if (!placeholder) {
-            if (result!!.status == 0) {
+            if (result.status == 0) {
                 //振动提醒
                 if (!vibrated.value) {
                     vibrated.value = true

@@ -30,6 +30,6 @@ fun SkillActionDetail.aura(): String {
     return if (actionDetail2 == 2) {
         getString(R.string.skill_action_type_desc_10_break, getTarget(), aura)
     } else {
-        "${getTarget()}${aura}$time"
+        "${getTarget()}の${aura}$time"
     }
 }

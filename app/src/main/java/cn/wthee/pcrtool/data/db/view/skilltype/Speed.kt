@@ -65,7 +65,7 @@ fun SkillActionDetail.speed(): String {
                     time
                 )
             } else {
-                "${tag}${getTarget()}，$descText$time"
+                "${getTarget()}の$tag、$descText$time"
             }
         }
 

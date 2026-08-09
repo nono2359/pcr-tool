@@ -25,6 +25,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
@@ -372,13 +373,13 @@ fun SkillItemContent(
                 if (!isExtraEquipSKill) {
                     FlowRow {
                         //技能类型
-                        CaptionText(
+                        SkillMetaText(
                             text = type,
                             modifier = Modifier.padding(end = Dimen.largePadding)
                         )
                         //技能等级
                         if (unitType == UnitType.ENEMY || unitType == UnitType.ENEMY_SUMMON) {
-                            CaptionText(
+                            SkillMetaText(
                                 text = stringResource(id = R.string.skill_level, skillDetail.level),
                                 modifier = Modifier.padding(end = Dimen.largePadding)
                             )
@@ -396,7 +397,7 @@ fun SkillItemContent(
                         }
                         //准备时间，显示：时间大于 0 或 角色1、2技能
                         if (skillDetail.castTime > 0 || (unitType == UnitType.CHARACTER && isNormalSkill)) {
-                            CaptionText(
+                            SkillMetaText(
                                 text = stringResource(
                                     id = R.string.skill_cast_time,
                                     skillDetail.castTime.toBigDecimal().stripTrailingZeros()
@@ -514,19 +515,37 @@ fun SkillActionItem(
             color = MaterialTheme.colorScheme.onSurface,
             text = buildAnnotatedString {
                 skillAction.actionDesc.forEachIndexed { index, char ->
-                    //替换括号及括号内字体颜色
+                    // 括弧内の色分けを保ちながら、敵スキルの数値・計算記号は標準フォントにする
+                    var markedColor: Color? = null
                     markDataList.forEach { mark ->
-                        mark.indexList.forEach {
-                            if (index >= it.start && index <= it.end) {
-                                withStyle(style = SpanStyle(color = mark.color)) {
-                                    append(char)
-                                }
-                                return@forEachIndexed
-                            }
+                        if (mark.indexList.any { index >= it.start && index <= it.end }) {
+                            markedColor = mark.color
                         }
                     }
-                    //添加非括号标记的参数
-                    append(char)
+                    val useDefaultFont =
+                        (unitType == UnitType.ENEMY || unitType == UnitType.ENEMY_SUMMON) &&
+                                (char.isDigit() || char in ".+-*")
+
+                    when {
+                        markedColor != null && useDefaultFont -> withStyle(
+                            SpanStyle(
+                                color = markedColor,
+                                fontFamily = FontFamily.Default
+                            )
+                        ) {
+                            append(char)
+                        }
+
+                        markedColor != null -> withStyle(SpanStyle(color = markedColor)) {
+                            append(char)
+                        }
+
+                        useDefaultFont -> withStyle(SpanStyle(fontFamily = FontFamily.Default)) {
+                            append(char)
+                        }
+
+                        else -> append(char)
+                    }
                 }
             }
         )
@@ -676,4 +695,30 @@ private fun SkillListContentPreview() {
             toCharacterVideo = null
         )
     }
+}
+
+/**
+ * スキル番号、強化記号、秒数などの英数字だけAndroid標準フォントで表示する。
+ */
+@Composable
+internal fun SkillMetaText(
+    text: String,
+    modifier: Modifier = Modifier,
+) {
+    Text(
+        text = buildAnnotatedString {
+            text.forEach { char ->
+                if (char.isDigit() || char == '.' || char == '+') {
+                    withStyle(SpanStyle(fontFamily = FontFamily.Default)) {
+                        append(char)
+                    }
+                } else {
+                    append(char)
+                }
+            }
+        },
+        modifier = modifier,
+        color = MaterialTheme.colorScheme.onSurface,
+        style = MaterialTheme.typography.bodySmall,
+    )
 }

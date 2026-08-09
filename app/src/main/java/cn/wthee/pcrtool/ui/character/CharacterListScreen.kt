@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridState
@@ -39,6 +40,7 @@ import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -219,6 +221,7 @@ private fun SharedTransitionScope.CharacterListContent(
                         animatedVisibilityScope = animatedVisibilityScope,
                         characterInfo = character,
                         favorite = favoriteIdList.contains(character.id),
+                        compact = true,
                         modifier = Modifier.padding(Dimen.mediumPadding),
                         onClick = {
                             toCharacterDetail(character.id)
@@ -325,7 +328,8 @@ fun SharedTransitionScope.CharacterItemContent(
     onClick: () -> Unit,
     unitId: Int,
     characterInfo: CharacterInfo?,
-    favorite: Boolean
+    favorite: Boolean,
+    compact: Boolean = false,
 ) {
 
     //图片是否加载成功
@@ -390,6 +394,7 @@ fun SharedTransitionScope.CharacterItemContent(
                     CharacterName(
                         color = MaterialTheme.colorScheme.primary,
                         character = characterInfo,
+                        compact = compact,
                         isBorder = true,
                         modifier = Modifier.align(Alignment.BottomStart)
                     )
@@ -398,6 +403,7 @@ fun SharedTransitionScope.CharacterItemContent(
                 CharacterName(
                     color = textColor,
                     character = characterInfo,
+                    compact = compact,
                     isBorder = false,
                     modifier = Modifier.align(Alignment.BottomStart)
                 )
@@ -407,6 +413,7 @@ fun SharedTransitionScope.CharacterItemContent(
                     CharacterName(
                         color = MaterialTheme.colorScheme.primary,
                         character = null,
+                        compact = compact,
                         isBorder = true,
                         modifier = Modifier.align(Alignment.BottomStart)
                     )
@@ -415,6 +422,7 @@ fun SharedTransitionScope.CharacterItemContent(
                 CharacterName(
                     color = textColor,
                     character = null,
+                    compact = compact,
                     isBorder = false,
                     modifier = Modifier.align(Alignment.BottomStart)
                 )
@@ -465,7 +473,8 @@ fun SharedTransitionScope.CharacterItemContent(
                                     characterInfo.age.fixedStr
                                 ),
                                 fontWeight = FontWeight.Bold,
-                                color = textColor
+                                color = textColor,
+                                style = if (compact) MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp) else MaterialTheme.typography.titleSmall
                             )
                             //体重
                             Subtitle2(
@@ -474,7 +483,8 @@ fun SharedTransitionScope.CharacterItemContent(
                                     characterInfo.weight.fixedStr
                                 ),
                                 fontWeight = FontWeight.Bold,
-                                color = textColor
+                                color = textColor,
+                                style = if (compact) MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp) else MaterialTheme.typography.titleSmall
                             )
                             //身高
                             Subtitle2(
@@ -483,7 +493,8 @@ fun SharedTransitionScope.CharacterItemContent(
                                     characterInfo.height.fixedStr
                                 ),
                                 fontWeight = FontWeight.Bold,
-                                color = textColor
+                                color = textColor,
+                                style = if (compact) MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp) else MaterialTheme.typography.titleSmall
                             )
                             //生日
                             Subtitle2(
@@ -493,7 +504,8 @@ fun SharedTransitionScope.CharacterItemContent(
                                     characterInfo.birthDay.fixedStr
                                 ),
                                 fontWeight = FontWeight.Bold,
-                                color = textColor
+                                color = textColor,
+                                style = if (compact) MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp) else MaterialTheme.typography.titleSmall
                             )
                         }
 
@@ -505,7 +517,11 @@ fun SharedTransitionScope.CharacterItemContent(
                             contentAlignment = Alignment.BottomEnd
                         ) {
                             CharacterTagRow(
+                                modifier = Modifier.offset(
+                                    y = if (compact) Dimen.mediumPadding else Dimen.smallPadding
+                                ),
                                 characterInfo = characterInfo,
+                                compact = compact,
                                 horizontalArrangement = Arrangement.End
                             )
                         }
@@ -514,6 +530,7 @@ fun SharedTransitionScope.CharacterItemContent(
                         CaptionText(
                             text = characterInfo.startTime.formatTime.toDate,
                             color = textColor,
+                            style = if (compact) MaterialTheme.typography.labelSmall.copy(fontSize = 9.sp) else MaterialTheme.typography.bodySmall,
                             modifier = Modifier.padding(
                                 end = Dimen.mediumPadding,
                                 top = Dimen.mediumPadding,
@@ -791,7 +808,8 @@ private fun SharedTransitionScope.CharacterIcon(
 private fun StarText(
     character: CharacterInfo,
     color: Color = Color.Unspecified,
-    sixStarColor: Color = colorPink
+    sixStarColor: Color = colorPink,
+    compact: Boolean = false,
 ) {
     Subtitle1(
         text = stringResource(
@@ -801,7 +819,8 @@ private fun StarText(
             sixStarColor
         } else {
             color
-        }
+        },
+        style = if (compact) MaterialTheme.typography.bodySmall else MaterialTheme.typography.titleMedium
     )
 }
 
@@ -813,6 +832,7 @@ private fun CharacterName(
     character: CharacterInfo?,
     color: Color,
     isBorder: Boolean,
+    compact: Boolean,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -839,7 +859,8 @@ private fun CharacterName(
             StarText(
                 character = character,
                 color = color,
-                sixStarColor = if (isBorder) color else colorPink
+                sixStarColor = if (isBorder) color else colorPink,
+                compact = compact
             )
         }
 
@@ -848,7 +869,8 @@ private fun CharacterName(
             Subtitle1(
                 text = character!!.getNameL(),
                 color = color,
-                selectable = !isBorder
+                selectable = !isBorder,
+                style = if (compact) MaterialTheme.typography.labelSmall else MaterialTheme.typography.titleMedium
             )
         }
         character?.getNameL()?.let {
@@ -860,7 +882,7 @@ private fun CharacterName(
             text = character?.getNameF() ?: stringResource(id = R.string.unknown_character),
             color = color,
             textAlign = TextAlign.Start,
-            style = MaterialTheme.typography.titleLarge,
+            style = if (compact) MaterialTheme.typography.bodySmall else MaterialTheme.typography.titleLarge,
             selectable = !isBorder
         )
     }

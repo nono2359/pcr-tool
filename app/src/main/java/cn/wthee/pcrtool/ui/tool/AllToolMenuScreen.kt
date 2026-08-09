@@ -120,7 +120,6 @@ fun AllToolMenuScreen(
     searchList.add(ToolMenuType.LEADER_TIER)
     searchList.add(ToolMenuType.RANDOM_AREA)
     searchList.add(ToolMenuType.WEBSITE)
-    searchList.add(ToolMenuType.TWEET)
     searchList.add(ToolMenuType.COMIC)
     searchList.add(ToolMenuType.LOAD_COMIC)
     itemGroupList.add(
@@ -304,6 +303,7 @@ private fun MenuItem(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val hasAdded = orderStr.intArrayList.contains(toolMenuType.id)
+    val comicUrl = stringResource(id = R.string.comic_zh_url)
 
 
     MainCard(
@@ -319,7 +319,7 @@ private fun MenuItem(
                 }
             }
         } else {
-            getAction(actions, toolMenuType)
+            getAction(actions, toolMenuType, comicUrl)
         },
         containerColor = if (hasAdded) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
     ) {

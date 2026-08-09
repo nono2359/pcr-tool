@@ -185,7 +185,7 @@ class PictureViewModel @Inject constructor(
             responseData.data.let { data ->
                 if (data != null) {
                     val url =
-                        ImageRequestHelper.getInstance().getComicUrl(id = id, resourceType = data)
+                        ImageRequestHelper.getInstance().getComicUrl(id = id)
                     val list = arrayListOf<String?>()
                     if (data != "") {
                         list.add(url)

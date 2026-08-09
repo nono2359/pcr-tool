@@ -59,6 +59,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import cn.wthee.pcrtool.R
 import cn.wthee.pcrtool.data.db.view.CharacterInfo
 import cn.wthee.pcrtool.data.enums.AtkType
@@ -621,8 +622,16 @@ fun CharacterTagRow(
     endText: String? = null,
     endTextColor: Color? = null,
     showUniqueEquipType: Boolean = true,
+    compact: Boolean = false,
     horizontalArrangement: Arrangement.Horizontal = Arrangement.Start
 ) {
+    val cardTagStyle = if (compact) {
+        MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp)
+    } else {
+        MaterialTheme.typography.labelSmall
+    }
+    val cardTagPadding = if (compact) Dimen.exSmallPadding else Dimen.smallPadding
+
     FlowRow(
         modifier = modifier,
         horizontalArrangement = horizontalArrangement,
@@ -660,7 +669,9 @@ fun CharacterTagRow(
                             .padding(Dimen.exSmallPadding)
                             .align(Alignment.CenterVertically),
                         text = stringResource(id = roleType.typeNameId),
-                        backgroundColor = roleType.color
+                        backgroundColor = roleType.color,
+                        style = cardTagStyle,
+                    horizontalPadding = cardTagPadding
                     )
                 }
 
@@ -670,7 +681,9 @@ fun CharacterTagRow(
                         .padding(horizontal = Dimen.exSmallPadding)
                         .align(Alignment.CenterVertically),
                     text = stringResource(id = limitType.typeNameId),
-                    backgroundColor = limitType.color
+                    backgroundColor = limitType.color,
+                    style = cardTagStyle,
+                    horizontalPadding = cardTagPadding
                 )
             }
 
@@ -707,7 +720,9 @@ fun CharacterTagRow(
                         talentType.color
                     } else {
                         atkType.color
-                    }
+                    },
+                    style = cardTagStyle,
+                    horizontalPadding = cardTagPadding
                 ) {
                     MainIcon(
                         modifier = Modifier.offset(x = -Dimen.smallPadding),
@@ -802,6 +817,7 @@ fun Tag(
     textColor: Color = colorWhite,
     fontWeight: FontWeight = FontWeight.ExtraBold,
     style: TextStyle = MaterialTheme.typography.bodyMedium,
+    horizontalPadding: Dp = Dimen.mediumPadding,
     endAlignment: Boolean = false,
     leadingContent: @Composable (() -> Unit)? = null
 ) {
@@ -809,7 +825,7 @@ fun Tag(
         modifier = modifier
             .clip(CircleShape)
             .background(color = backgroundColor, shape = CircleShape)
-            .padding(horizontal = Dimen.mediumPadding),
+            .padding(horizontal = horizontalPadding),
         horizontalArrangement = if (endAlignment) Arrangement.End else Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {

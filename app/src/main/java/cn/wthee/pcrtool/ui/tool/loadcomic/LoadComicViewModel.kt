@@ -50,7 +50,9 @@ class LoadComicViewModel @Inject constructor(
                 if (data != null) {
                     val list = arrayListOf<String>()
                     data.forEach {
-                        list.add(ImageRequestHelper.getInstance().getResourcePrefixUrl() + it)
+                        // APIには中国版パスも含まれるため、同じIDの日本版リソースを使用する。
+                        val jpPath = "jp/" + it.substringAfter('/')
+                        list.add(ImageRequestHelper.getInstance().getResourcePrefixUrl() + jpPath)
                     }
 
                     _uiState.update {

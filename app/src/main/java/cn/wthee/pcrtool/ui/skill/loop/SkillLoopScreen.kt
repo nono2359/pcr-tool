@@ -24,6 +24,7 @@ import cn.wthee.pcrtool.ui.components.CommonSpacer
 import cn.wthee.pcrtool.ui.components.MainIcon
 import cn.wthee.pcrtool.ui.components.MainTitleText
 import cn.wthee.pcrtool.ui.components.VerticalGridList
+import cn.wthee.pcrtool.ui.skill.SkillMetaText
 import cn.wthee.pcrtool.ui.skill.getSkillColor
 import cn.wthee.pcrtool.ui.theme.CombinedPreviews
 import cn.wthee.pcrtool.ui.theme.Dimen
@@ -175,12 +176,11 @@ private fun SkillLoopItemContent(
             )
 
             //准备时间
-            CaptionText(
+            SkillMetaText(
                 text = stringResource(
                     id = R.string.cast_time,
                     castTime.toBigDecimal().stripTrailingZeros().toPlainString()
-                ),
-                textAlign = TextAlign.Center
+                )
             )
         }
     }

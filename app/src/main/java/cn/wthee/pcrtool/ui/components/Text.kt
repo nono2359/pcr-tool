@@ -154,13 +154,14 @@ fun Subtitle1(
     selectable: Boolean = false,
     maxLines: Int = Int.MAX_VALUE,
     textAlign: TextAlign = TextAlign.Start,
+    style: TextStyle = MaterialTheme.typography.titleMedium,
 ) {
     val content: @Composable () -> Unit = {
         Text(
             text = text,
             color = color,
             textAlign = textAlign,
-            style = MaterialTheme.typography.titleMedium,
+            style = style,
             modifier = if (selectable) Modifier else modifier,
             maxLines = maxLines,
             overflow = TextOverflow.Ellipsis,
@@ -185,14 +186,15 @@ fun Subtitle2(
     selectable: Boolean = false,
     maxLines: Int = Int.MAX_VALUE,
     textAlign: TextAlign = TextAlign.Start,
-    fontWeight: FontWeight = FontWeight.Normal
+    fontWeight: FontWeight = FontWeight.Normal,
+    style: TextStyle = MaterialTheme.typography.titleSmall,
 ) {
     val content: @Composable () -> Unit = {
         Text(
             text = text,
             color = color,
             textAlign = textAlign,
-            style = MaterialTheme.typography.titleSmall,
+            style = style,
             modifier = if (selectable) Modifier else modifier,
             maxLines = maxLines,
             overflow = TextOverflow.Ellipsis,

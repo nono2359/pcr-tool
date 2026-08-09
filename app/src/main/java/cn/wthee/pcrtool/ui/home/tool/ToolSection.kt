@@ -39,6 +39,7 @@ import cn.wthee.pcrtool.ui.theme.CombinedPreviews
 import cn.wthee.pcrtool.ui.theme.Dimen
 import cn.wthee.pcrtool.ui.theme.PreviewLayout
 import cn.wthee.pcrtool.ui.theme.defaultSpring
+import cn.wthee.pcrtool.utils.BrowserUtil
 import cn.wthee.pcrtool.utils.VibrateUtil
 import cn.wthee.pcrtool.utils.deleteSpace
 import cn.wthee.pcrtool.utils.editOrder
@@ -145,7 +146,9 @@ fun ToolMenu(
         val toolList = arrayListOf<ToolMenuType>()
         toolOrderData?.intArrayList?.forEach {
             ToolMenuType.getByValue(it)?.let { toolMenuType ->
-                toolList.add(toolMenuType)
+                if (toolMenuType != ToolMenuType.TWEET) {
+                    toolList.add(toolMenuType)
+                }
             }
         }
 
@@ -174,6 +177,7 @@ fun MenuItem(
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+    val comicUrl = stringResource(id = R.string.comic_zh_url)
 
     Column(
         modifier = Modifier
@@ -193,7 +197,7 @@ fun MenuItem(
                         }
                     }
                 } else {
-                    getAction(actions, toolMenuType)()
+                    getAction(actions, toolMenuType, comicUrl)()
                 }
             }
             .defaultMinSize(minWidth = Dimen.menuItemSize)
@@ -214,7 +218,8 @@ fun MenuItem(
  */
 fun getAction(
     actions: NavActions,
-    toolMenuType: ToolMenuType
+    toolMenuType: ToolMenuType,
+    comicUrl: String,
 ): () -> Unit {
 
     return {
@@ -227,8 +232,8 @@ fun getAction(
             ToolMenuType.PVP_SEARCH -> actions.toPvp()
             ToolMenuType.LEADER -> actions.toLeader()
             ToolMenuType.EQUIP -> actions.toEquipList()
-            ToolMenuType.TWEET -> actions.toTweetList()
-            ToolMenuType.COMIC -> actions.toComicList()
+            ToolMenuType.TWEET -> Unit // 日本語版では無効
+            ToolMenuType.COMIC -> BrowserUtil.open(comicUrl)
             ToolMenuType.ALL_EQUIP -> actions.toAllEquipList()
             ToolMenuType.RANDOM_AREA -> actions.toRandomEquipArea(0)
             ToolMenuType.NEWS -> actions.toNews()

@@ -266,16 +266,6 @@ fun MainSettings() {
                     BrowserUtil.open(comicZhUrl)
                 }
             )
-            //- 日服情报
-            val jpInfoUrl = stringResource(id = R.string.jp_info_url)
-            SettingCommonItem(
-                iconType = MainIconType.TWEET,
-                title = stringResource(id = R.string.title_jp_info),
-                summary = stringResource(id = R.string.tip_jp_info),
-                onClick = {
-                    BrowserUtil.open(jpInfoUrl)
-                }
-            )
             //- 额外掉落
             val randomDropUrl = stringResource(id = R.string.random_drop_source_url)
             SettingCommonItem(

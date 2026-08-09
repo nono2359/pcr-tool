@@ -94,11 +94,10 @@ class ImageRequestHelper {
     fun getResourcePrefixUrl() = RESOURCE_PREFIX_URL
 
     /**
-     * 获取过场漫画资源地址
-     * @param resourceType 资源类型
+     * 日本版の1コマ漫画リソースURLを取得する。
      */
-    fun getComicUrl(id: Any, resourceType: String) =
-        RESOURCE_PREFIX_URL + resourceType + RESOURCE + COMIC + id.toString() + WEBP
+    fun getComicUrl(id: Any) =
+        RESOURCE_PREFIX_URL + RegionType.JP.code + RESOURCE + COMIC + id.toString() + WEBP
 
 
     //获取动画列表
