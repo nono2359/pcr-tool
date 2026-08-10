@@ -52,6 +52,7 @@ import cn.wthee.pcrtool.ui.MainActivity
 import cn.wthee.pcrtool.ui.MainActivity.Companion.animOnFlag
 import cn.wthee.pcrtool.ui.SettingCommonItem
 import cn.wthee.pcrtool.ui.SettingSwitchCompose
+import cn.wthee.pcrtool.ui.ThemeModeSetting
 import cn.wthee.pcrtool.ui.components.AppResumeEffect
 import cn.wthee.pcrtool.ui.components.CaptionText
 import cn.wthee.pcrtool.ui.components.CircularProgressCompose
@@ -142,6 +143,7 @@ fun SharedTransitionScope.Overview(
             TopBarCompose(
                 isEditMode = uiState.isEditMode,
                 appUpdateData = uiState.appUpdateData,
+                furnitureMasterMissingCount = uiState.furnitureMasterMissingCount,
                 apkDownloadState = uiState.apkDownloadState,
                 isExpanded = uiState.isAppNoticeExpanded,
                 updateApkDownloadState = overviewScreenViewModel::updateApkDownloadState,
@@ -745,6 +747,10 @@ private fun SettingDropMenu(
                 ),
             containerColor = MaterialTheme.colorScheme.primaryContainer,
         ) {
+            ThemeModeSetting(
+                modifier = Modifier.padding(horizontal = Dimen.smallPadding),
+                compact = true
+            )
             Spacer(modifier = Modifier.height(Dimen.mediumPadding))
             SettingSwitchCompose(
                 modifier = Modifier.padding(horizontal = Dimen.smallPadding),

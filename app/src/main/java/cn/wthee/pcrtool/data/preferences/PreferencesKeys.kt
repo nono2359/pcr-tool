@@ -37,4 +37,7 @@ object SettingPreferencesKeys {
     val SP_COLOR_STATE = booleanPreferencesKey("dynamic_color_state")
     val SP_USE_IP = booleanPreferencesKey("use_ip")
     val SP_TIME_ZONE = booleanPreferencesKey("time_zone")
+    val SP_THEME_MODE = intPreferencesKey("theme_mode")
+    val SP_FURNITURE_MASTER_MISSING_COUNT = intPreferencesKey("furniture_master_missing_count")
+    val SP_FURNITURE_MASTER_MISSING_IDS = stringPreferencesKey("furniture_master_missing_ids")
 }

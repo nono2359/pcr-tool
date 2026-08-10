@@ -91,6 +91,7 @@ fun TopBarCompose(
     isEditMode: Boolean,
     apkDownloadState: Int,
     appUpdateData: AppNotice,
+    furnitureMasterMissingCount: Int = 0,
     isExpanded: Boolean,
     changeEditMode: () -> Unit,
     updateApkDownloadState: (Int) -> Unit,
@@ -155,7 +156,17 @@ fun TopBarCompose(
                         )
                     }
 
-                    -3 -> Unit
+                    -3 -> {
+                        if (furnitureMasterMissingCount > 0) {
+                            MainIcon(
+                                data = if (isExpanded) MainIconType.CLOSE else MainIconType.NOTICE,
+                                tint = MaterialTheme.colorScheme.onSurface,
+                                size = Dimen.fabIconSize,
+                                modifier = Modifier.padding(start = Dimen.smallPadding),
+                                onClick = { updateExpanded(!isExpanded) }
+                            )
+                        }
+                    }
 
                     else -> {
                         //提示
@@ -204,6 +215,7 @@ fun TopBarCompose(
     ExpandAnimation(visible = isExpanded || appUpdateData.id == -2 || apkDownloadState > -2) {
         AppUpdateContent(
             appUpdateData = appUpdateData,
+            furnitureMasterMissingCount = furnitureMasterMissingCount,
             apkDownloadState = apkDownloadState,
             updateApkDownloadState = updateApkDownloadState
         )
@@ -216,6 +228,7 @@ fun TopBarCompose(
 @Composable
 private fun AppUpdateContent(
     appUpdateData: AppNotice,
+    furnitureMasterMissingCount: Int,
     apkDownloadState: Int,
     updateApkDownloadState: (Int) -> Unit
 ) {
@@ -273,6 +286,11 @@ private fun AppUpdateContent(
             ),
             fillMaxWidth = !downloading
         ) {
+            if (furnitureMasterMissingCount > 0) {
+                FurnitureMasterContent(furnitureMasterMissingCount)
+            }
+
+            if (appUpdateData.id == -3) return@MainCard
             if (appUpdateData.id != -2) {
                 if (downloading) {
                     //下载相关
@@ -299,6 +317,31 @@ private fun AppUpdateContent(
 
 }
 
+@Composable
+private fun FurnitureMasterContent(missingCount: Int) {
+    Column(
+        modifier = Modifier.padding(
+            horizontal = Dimen.largePadding,
+            vertical = Dimen.mediumPadding
+        )
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            MainIcon(
+                data = MainIconType.NOTICE,
+                size = Dimen.fabIconSize,
+                tint = colorRed
+            )
+            MainText(
+                text = "家具マスタの更新が必要です",
+                modifier = Modifier.padding(start = Dimen.smallPadding)
+            )
+        }
+        CaptionText(
+            text = "名前を解決できないモーションIDが${missingCount}件あります。サーバ側の家具マスタ更新後に解消されます。",
+            modifier = Modifier.padding(top = Dimen.smallPadding)
+        )
+    }
+}
 /**
  * 下载进度
  */

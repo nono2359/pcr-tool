@@ -17,6 +17,9 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.setValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.SharedPreferencesMigration
@@ -25,6 +28,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import androidx.navigation.NavHostController
 import cn.wthee.pcrtool.MyApplication.Companion.context
 import cn.wthee.pcrtool.R
+import cn.wthee.pcrtool.data.enums.AppThemeMode
 import cn.wthee.pcrtool.data.enums.RegionType
 import cn.wthee.pcrtool.data.preferences.SettingPreferencesKeys
 import cn.wthee.pcrtool.database.AppBasicDatabase
@@ -77,6 +81,7 @@ class MainActivity : ComponentActivity() {
         var animOnFlag = true
         var dynamicColorOnFlag = true
         var autoTimeZone = true
+        var themeMode by mutableIntStateOf(AppThemeMode.SYSTEM)
         var r6Ids = listOf<Int>()
         // 日本語版では、地域設定がまだ保存されていない初回起動時に日本版を使用する。
         var regionType = RegionType.JP
@@ -98,8 +103,13 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             //状态栏、导航栏适配
-            val darkTheme = isSystemInDarkTheme()
-            DisposableEffect(isSystemInDarkTheme()) {
+            val systemDarkTheme = isSystemInDarkTheme()
+            val darkTheme = when (themeMode) {
+                AppThemeMode.DAY -> false
+                AppThemeMode.NIGHT -> true
+                else -> systemDarkTheme
+            }
+            DisposableEffect(darkTheme) {
                 enableEdgeToEdge(
                     statusBarStyle = SystemBarStyle.auto(
                         Color.TRANSPARENT,
@@ -136,6 +146,7 @@ class MainActivity : ComponentActivity() {
             animOnFlag = preferences[SettingPreferencesKeys.SP_ANIM_STATE] != false
             dynamicColorOnFlag = preferences[SettingPreferencesKeys.SP_COLOR_STATE] != false
             autoTimeZone = preferences[SettingPreferencesKeys.SP_TIME_ZONE] != false
+            themeMode = preferences[SettingPreferencesKeys.SP_THEME_MODE] ?: AppThemeMode.SYSTEM
             regionType = RegionType.getByValue(
                 preferences[SettingPreferencesKeys.SP_DATABASE_TYPE] ?: RegionType.JP.value
             )

@@ -32,6 +32,10 @@
         android:theme="@style/Theme.App.Starting"
         android:enableOnBackInvokedCallback="true"
         tools:targetApi="upside_down_cake">
+        <activity
+            android:name=".ui.spine.SpineViewerActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Pcrtoolcompose.SpineViewer" />
         <service
             android:name=".ui.tool.pvp.PvpFloatService"
             android:foregroundServiceType="mediaPlayback"

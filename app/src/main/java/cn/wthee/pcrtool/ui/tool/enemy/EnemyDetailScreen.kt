@@ -188,9 +188,9 @@ fun EnemyDetailContent(
                 .align(Alignment.CenterHorizontally),
             onClick = {
                 if (enemyData.prefabId / 100000 == 1) {
-                    BrowserUtil.open(Constants.PREVIEW_UNIT_URL + enemyData.prefabId)
+                    cn.wthee.pcrtool.ui.spine.SpineViewerActivity.open(cn.wthee.pcrtool.MyApplication.context, Constants.PREVIEW_UNIT_URL + enemyData.prefabId)
                 } else {
-                    BrowserUtil.open(Constants.PREVIEW_ENEMY_URL + enemyData.prefabId)
+                    cn.wthee.pcrtool.ui.spine.SpineViewerActivity.open(cn.wthee.pcrtool.MyApplication.context, Constants.PREVIEW_ENEMY_URL + enemyData.prefabId)
                 }
             }
         )

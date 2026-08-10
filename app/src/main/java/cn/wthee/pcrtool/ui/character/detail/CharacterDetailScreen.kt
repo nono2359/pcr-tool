@@ -607,7 +607,7 @@ private fun ToolsContent(
                     openDialog.value = true
                 } else {
                     val id = if (cutinId != 0) cutinId else unitId
-                    BrowserUtil.open(Constants.PREVIEW_UNIT_URL + id)
+                    cn.wthee.pcrtool.ui.spine.SpineViewerActivity.open(cn.wthee.pcrtool.MyApplication.context, Constants.PREVIEW_UNIT_URL + id)
                 }
             }
         )
@@ -672,7 +672,7 @@ private fun SpineTypeSelectDialog(
                     MainIcon(
                         data = ImageRequestHelper.getInstance().getMaxIconUrl(idList[0]),
                         onClick = {
-                            BrowserUtil.open(Constants.PREVIEW_UNIT_URL + idList[0] + "&type=1")
+                            cn.wthee.pcrtool.ui.spine.SpineViewerActivity.open(cn.wthee.pcrtool.MyApplication.context, Constants.PREVIEW_UNIT_URL + idList[0] + "&type=1")
                         }
                     )
                 }
@@ -690,7 +690,7 @@ private fun SpineTypeSelectDialog(
                         MainIcon(
                             data = ImageRequestHelper.getInstance().getMaxIconUrl(it),
                             onClick = {
-                                BrowserUtil.open(Constants.PREVIEW_UNIT_URL + it + "&type=2")
+                                cn.wthee.pcrtool.ui.spine.SpineViewerActivity.open(cn.wthee.pcrtool.MyApplication.context, Constants.PREVIEW_UNIT_URL + it + "&type=2")
                             },
                             modifier = Modifier.padding(end = Dimen.largePadding)
                         )

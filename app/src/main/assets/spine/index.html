@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <title>Spineモデルプレビュー</title>
+  <script>document.documentElement.dataset.theme = new URLSearchParams(location.search).get("theme") || "system";</script>
+  <link rel="stylesheet" href="./viewer.css">
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <p class="eyebrow">pcr-tool compatible viewer</p>
+      <h1>Spineモデルプレビュー</h1>
+    </header>
+    <section class="panel titled-panel" aria-labelledby="request-heading">
+      <h2 id="request-heading" class="panel-caption">モデル選択</h2>
+      <dl id="request-details"></dl>
+      <button id="open-selector" class="secondary-button" type="button">モデル変更</button>
+    </section>
+    <section class="panel titled-panel preview-panel" aria-labelledby="viewer-heading">
+      <h2 id="viewer-heading" class="panel-caption">プレビュー</h2>
+      <div id="stage" aria-label="Spineプレビュー領域">
+        <canvas id="canvas"></canvas>
+        <p id="stage-message">Spine 3.6ランタイムを読み込んでいます…</p>
+      </div>
+      <div class="viewer-heading">
+        <div class="controls" aria-label="再生設定">
+          <label id="motion-group-label" hidden>モーションID <select id="motion-group" disabled></select></label>
+          <label>アニメーション <select id="animation" disabled></select></label>
+          <button id="toggle-playback" type="button" disabled>一時停止</button>
+          <button id="save-gif" type="button" disabled>GIF保存</button>
+          <label>速度 <select id="speed"><option value="0.5">0.5x</option><option value="1" selected>1x</option><option value="1.5">1.5x</option><option value="2">2x</option></select></label>
+        </div>
+      </div>
+    </section>
+    <p id="status" class="viewer-status" role="status"></p>
+    <footer class="viewer-footer">Spine 3.6 WebGLランタイムによるローカル再生画面です。</footer>
+  </main>
+  <dialog id="character-dialog" aria-labelledby="character-dialog-title">
+    <form method="dialog" class="selector-form">
+      <div class="dialog-heading"><h2 id="character-dialog-title">モデル選択</h2><button value="cancel" class="icon-button" aria-label="閉じる">×</button></div>
+      <fieldset class="inline-options"><legend>対象</legend><label><input type="radio" name="selector-target" value="unit" checked> キャラクター</label><label><input type="radio" name="selector-target" value="enemy"> エネミー</label><label><input type="radio" name="selector-target" value="clan"> クランバトルボス</label></fieldset>
+      <label class="search-label">名前・ID検索 <input id="character-search" type="search" autocomplete="off" placeholder="ヒヨリ / 100101"></label>
+      <fieldset class="inline-options"><legend>並び順</legend><label><input type="radio" name="character-sort" value="id" checked> ID順</label><label><input type="radio" name="character-sort" value="name"> 五十音順</label></fieldset>
+      <label class="list-label">モデル<div id="character-list" role="listbox" aria-label="キャラクター一覧" tabindex="0"></div></label>
+<fieldset id="preview-options" class="inline-options"><legend>プレビュー</legend><label><input type="radio" name="preview-type" value="1" checked> バトル</label><label><input type="radio" name="preview-type" value="2"> ギルドハウス</label></fieldset>
+      <fieldset id="rarity-options" class="inline-options"><legend>モデル</legend><label><input type="radio" name="model-rarity" value="default" checked> 既定</label><label><input type="radio" name="model-rarity" value="3"> ★3</label><label><input id="rarity-6" type="radio" name="model-rarity" value="6"> ★6</label></fieldset>
+      <p id="selector-note" class="selector-note"></p>
+      <div class="dialog-actions"><button value="cancel" class="secondary-button">キャンセル</button><button id="show-character" type="button">表示</button></div>
+    </form>
+  </dialog>
+  <script src="./vendor/spine-webgl.js"></script>
+  <script src="./vendor/gif.js"></script>
+  <script src="./viewer.js"></script>
+</body>
+</html>

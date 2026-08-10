@@ -40,7 +40,7 @@
     <string name="rank_select">RANK選択</string>
     <string name="rank_compare">RANK比較</string>
     <string name="calc_equip_count">装備集計</string>
-    <string name="character_pic">立ち絵</string>
+    <string name="character_pic">アルバム</string>
     <string name="character_card_video">アニメカード</string>
     <string name="character_basic_info">キャラ詳細</string>
     <string name="basic_info">基本情報</string>
@@ -65,7 +65,7 @@
     <string name="order_character_detail">選択されていないモジュールは 2 ページ目に表示されます (編集終了後にスライドして切り替えます)。</string>
     <string name="character_card">キャラカード</string>
     <string name="character_other_tool">その他の機能（装備集計など）</string>
-    <string name="character_tool">機能（プロフィール、立ち絵、モデル）</string>
+    <string name="character_tool">機能（プロフィール、アルバム、モデル）</string>
     <string name="character_power">戦闘力</string>
     <string name="tip_skill_loop">スキルループ（未選択時はフローティングボタンを表示）</string>
     <string name="character_icon_info">キャラアイコン</string>

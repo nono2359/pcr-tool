@@ -123,6 +123,7 @@ fun MainSettings() {
                 text = stringResource(id = R.string.app_setting),
                 modifier = Modifier.padding(Dimen.largePadding)
             )
+            ThemeModeSetting(modifier = Modifier.fillMaxWidth())
             //- 振动开关
             SettingSwitchCompose(type = SettingSwitchType.VIBRATE, showSummary = true)
             //- 动画效果

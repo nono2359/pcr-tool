@@ -49,6 +49,8 @@ data class OverviewScreenUiState(
     val showChangeDb: Boolean = false,
     //顶部通知信息
     val appUpdateData: AppNotice = AppNotice(id = -1),
+    //家具マスタで名前を解決できないルームモーション数
+    val furnitureMasterMissingCount: Int = 0,
     /**
      * apk下载状态
      * -4: 安装包安装失败
@@ -128,8 +130,21 @@ class OverviewScreenViewModel @Inject constructor(
         }
         //应用更新校验
         checkAppUpdate()
+        checkFurnitureMasterStatus()
     }
 
+    private fun checkFurnitureMasterStatus() {
+        viewModelScope.launch {
+            val preferences = MyApplication.context.dataStoreSetting.data.first()
+            _uiState.update {
+                it.copy(
+                    furnitureMasterMissingCount = preferences[
+                        SettingPreferencesKeys.SP_FURNITURE_MASTER_MISSING_COUNT
+                    ] ?: 0
+                )
+            }
+        }
+    }
     /**
      * 加载模块排序信息
      */

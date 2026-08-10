@@ -29,6 +29,9 @@
 - キャラTier表の日本語化と、APIで未関連の新キャラIDの補完
 - キャラの1コマ漫画を日本版リソースで表示
 - 日本版公式4コマ漫画サイトへのリンク
+- キャラクター・エネミー・クランバトルボスのSpineモデルをアプリ内で再生
+- バトル／ギルドハウスのモーション選択と透過アニメーションGIF保存
+- システム／デイ／ナイトのテーマ切り替え
 
 アプリIDが原版の `cn.wthee.pcrtool` と異なるため、原版と日本語版を同じ端末へインストールできます。
 
@@ -105,6 +108,28 @@ Release版には署名設定が必要です。公開タグ `v*` のPush時には
 - [更新履歴](CHANGELOG.md)
 - [使用しているデータテーブル](DATATABLE.md)
 - [開発に参加する方へ](CONTRIBUTING.md)
+
+## 家具モーション名マスタ
+
+Spine Viewerの家具名は次のファイルをAPKへ内蔵し、同じファイルのGitHub Raw版を優先取得します。
+
+```text
+app/src/main/assets/spine/data/room-motion-names-ja.json
+```
+
+名前を追加・修正する場合は管理者用コマンドを実行します。
+
+```powershell
+py tools/update_room_motion_master.py --set 002205=家具名
+```
+
+複数件をJSONから取り込む場合：
+
+```powershell
+py tools/update_room_motion_master.py --source room-motion-name-import-ja.json
+```
+
+更新したJSONを `nono2359/pcr-tool` の既定ブランチへcommit/pushすると、アプリがGitHub Rawから取得します。通信失敗時や未push時はAPK内蔵版を使用します。
 
 ## ライセンスと謝辞
 

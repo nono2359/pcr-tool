@@ -3,6 +3,7 @@ package cn.wthee.pcrtool.ui
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.navigation.BottomSheetNavigator
 import androidx.compose.material.rememberModalBottomSheetState
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
@@ -10,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
+import cn.wthee.pcrtool.data.enums.AppThemeMode
 import cn.wthee.pcrtool.navigation.NavActions
 import cn.wthee.pcrtool.navigation.NavGraph
 import cn.wthee.pcrtool.navigation.NavViewModel
@@ -30,7 +32,13 @@ fun PCRToolApp(
         mainViewModel.getR6Ids()
     }
 
-    PCRToolComposeTheme {
+    val darkTheme = when (MainActivity.themeMode) {
+        AppThemeMode.DAY -> false
+        AppThemeMode.NIGHT -> true
+        else -> isSystemInDarkTheme()
+    }
+
+    PCRToolComposeTheme(darkTheme = darkTheme) {
         //bottom sheet
         val sheetState = rememberModalBottomSheetState(
             initialValue = ModalBottomSheetValue.Hidden,
