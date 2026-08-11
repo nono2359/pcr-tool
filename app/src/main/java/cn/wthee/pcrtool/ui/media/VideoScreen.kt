@@ -1,5 +1,6 @@
 package cn.wthee.pcrtool.ui.media
 
+import android.view.TextureView
 import androidx.annotation.OptIn
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.gestures.rememberTransformableState
@@ -46,7 +47,6 @@ import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.datasource.cache.CacheDataSource
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
-import androidx.media3.ui.PlayerView
 import cn.wthee.pcrtool.BuildConfig
 import cn.wthee.pcrtool.MyApplication
 import cn.wthee.pcrtool.R
@@ -567,12 +567,13 @@ private fun MainPlayView(
         //播放器
         AndroidView(
             factory = {
-                PlayerView(context).apply {
-                    useController = false
-                    player = exoPlayer
+                TextureView(context).apply {
+                    exoPlayer.setVideoTextureView(this)
                 }
             },
-            modifier = Modifier
+            update = {
+                exoPlayer.setVideoTextureView(it)
+            },modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(ratio = ratio)
         )
