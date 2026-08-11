@@ -2,7 +2,6 @@ package cn.wthee.pcrtool.ui.media
 
 import androidx.annotation.OptIn
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.layout.Arrangement
@@ -30,7 +29,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -338,14 +336,7 @@ private fun VideoPreviewDialog(
                         translationX = offset.x,
                         translationY = offset.y
                     )
-                    .pointerInput(Unit) {
-                        detectTapGestures(
-                            onDoubleTap = {
-                                if (scale == 1f) scale = 2.5f else resetTransform()
-                            }
-                        )
-                    }
-                    .transformable(transformableState)
+.transformable(transformableState)
                     .zIndex(99f)
                     .padding(horizontal = Dimen.mediumPadding)
             )
@@ -570,6 +561,7 @@ private fun MainPlayView(
     val context = LocalContext.current
 
     Box(
+        modifier = modifier,
         contentAlignment = Alignment.Center
     ) {
         //播放器
@@ -580,7 +572,7 @@ private fun MainPlayView(
                     player = exoPlayer
                 }
             },
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(ratio = ratio)
         )
