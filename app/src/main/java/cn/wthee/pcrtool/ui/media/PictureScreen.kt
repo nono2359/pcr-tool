@@ -47,6 +47,7 @@ import cn.wthee.pcrtool.ui.components.MainTabRow
 import cn.wthee.pcrtool.ui.components.RATIO
 import cn.wthee.pcrtool.ui.components.RATIO_BANNER
 import cn.wthee.pcrtool.ui.components.RATIO_TEASER
+import cn.wthee.pcrtool.ui.components.Subtitle1
 import cn.wthee.pcrtool.ui.components.TabData
 import cn.wthee.pcrtool.ui.components.placeholder
 import cn.wthee.pcrtool.ui.theme.CombinedPreviews
@@ -55,6 +56,7 @@ import cn.wthee.pcrtool.ui.theme.FadeAnimation
 import cn.wthee.pcrtool.ui.theme.PreviewLayout
 import cn.wthee.pcrtool.ui.theme.noShape
 import cn.wthee.pcrtool.utils.ImageRequestHelper
+import cn.wthee.pcrtool.utils.ComicTitleMaster
 import cn.wthee.pcrtool.utils.MediaDownloadHelper
 import cn.wthee.pcrtool.utils.ToastUtil
 import cn.wthee.pcrtool.utils.VibrateUtil
@@ -197,15 +199,13 @@ private fun PictureScreenContent(uiState: PictureUiState) {
                         showTitle = false,
                         noDataText = stringResource(id = R.string.no_comic_info)
                     ) {
-                        PictureItem(
+                        ComicPictureItem(
                             picUrl = it,
                             modifier = Modifier
                                 .padding(
                                     horizontal = Dimen.largePadding,
                                     vertical = Dimen.mediumPadding
-                                ),
-                            shape = noShape(),
-                            ratio = 1f
+                                )
                         )
                     }
                 }
@@ -245,6 +245,37 @@ private fun PictureScreenContent(uiState: PictureUiState) {
 }
 
 
+/**
+ * 1コマ漫画。ゲーム内表示に合わせ、タイトルと4:3画像を縦に並べる。
+ */
+@Composable
+fun ComicPictureItem(
+    picUrl: String?,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier) {
+        PictureItem(
+            picUrl = picUrl,
+            modifier = Modifier.fillMaxWidth(),
+            shape = noShape(),
+            ratio = 4f / 3f,
+            contentScale = ContentScale.FillBounds
+        )
+        Subtitle1(
+            text = ComicTitleMaster.getTitle(picUrl) ?: "\u00a0",
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = Dimen.smallPadding,
+                    top = Dimen.linePadding,
+                    end = Dimen.smallPadding
+                ),
+            maxLines = 1,
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+            style = MaterialTheme.typography.labelSmall
+        )
+    }
+}
 /**
  * 图片
  *
@@ -314,6 +345,10 @@ private fun PreviewPictureDialog(
     val scope = rememberCoroutineScope()
     //加载完成bitmap
     val loadedPic: MutableState<Bitmap?> = remember(picUrl) {
+        mutableStateOf(null)
+    }
+    //1コマ漫画は拡大表示時点でゲーム同様の4:3へ変形する
+    val previewBitmap: MutableState<Bitmap?> = remember(picUrl) {
         mutableStateOf(null)
     }
     //加载成功
@@ -423,7 +458,7 @@ private fun PreviewPictureDialog(
         ) {
             //预览功能，手势操作
             MainImage(
-                data = picUrl,
+                data = previewBitmap.value ?: picUrl,
                 ratio = ratio,
                 modifier = Modifier
                     .graphicsLayer(
@@ -443,8 +478,17 @@ private fun PreviewPictureDialog(
                         openPreviewDialog.value = false
                     },
                 onSuccess = {
-                    //获取本地原图缓存
-                    loadedPic.value = (it.image as BitmapImage).bitmap
+                    //1コマ漫画は拡大表示・保存とも同じ4:3 Bitmapを使用する
+                    val source = (it.image as BitmapImage).bitmap
+                    val output = if (isComicUrl(picUrl)) {
+                        stretchBitmapToFourByThree(source)
+                    } else {
+                        source
+                    }
+                    loadedPic.value = output
+                    if (output !== source) {
+                        previewBitmap.value = output
+                    }
                     success = true
                 }
             )
@@ -453,6 +497,22 @@ private fun PreviewPictureDialog(
 
 }
 
+private fun isComicUrl(url: String): Boolean =
+    url.contains(ImageRequestHelper.COMIC) || url.contains(ImageRequestHelper.COMIC_ZH)
+
+/**
+ * ゲーム内表示と同じく、正方形の1コマ漫画を切らずに4:3へ変形する。
+ */
+private fun stretchBitmapToFourByThree(source: Bitmap): Bitmap {
+    val sourceRatio = source.width.toFloat() / source.height
+    if (kotlin.math.abs(sourceRatio - 4f / 3f) < 0.001f) {
+        return source
+    }
+
+    val targetWidth = source.width
+    val targetHeight = (targetWidth * 3 / 4).coerceAtLeast(1)
+    return Bitmap.createScaledBitmap(source, targetWidth, targetHeight, true)
+}
 /**
  * 获取文件名
  */

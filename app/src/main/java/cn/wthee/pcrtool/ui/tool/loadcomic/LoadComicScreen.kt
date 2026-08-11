@@ -20,6 +20,7 @@ import cn.wthee.pcrtool.ui.components.StateBox
 import cn.wthee.pcrtool.ui.components.VerticalStaggeredGrid
 import cn.wthee.pcrtool.ui.components.getItemWidth
 import cn.wthee.pcrtool.ui.media.MediaGridList
+import cn.wthee.pcrtool.ui.media.ComicPictureItem
 import cn.wthee.pcrtool.ui.media.PictureItem
 import cn.wthee.pcrtool.ui.theme.CombinedPreviews
 import cn.wthee.pcrtool.ui.theme.Dimen
@@ -68,7 +69,7 @@ fun LoadComicScreen(
                     for (i in 0..10) {
                         PictureItem(
                             picUrl = "",
-                            ratio = 1f,
+                            ratio = 4f / 3f,
                             shape = noShape(),
 
                             )
@@ -98,10 +99,8 @@ private fun LoadComicContent(
         itemWidth = getItemWidth() / 2,
         scrollState = scrollState
     ) {
-        PictureItem(
+        ComicPictureItem(
             picUrl = it,
-            ratio = 1f,
-            shape = noShape(),
             modifier = Modifier.padding(
                 horizontal = Dimen.largePadding,
                 vertical = Dimen.mediumPadding

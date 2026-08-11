@@ -43,7 +43,7 @@ const val SCALE_LOGO = 2.2f
 @Composable
 fun MainImage(
     modifier: Modifier = Modifier,
-    data: String?,
+    data: Any?,
     ratio: Float?,
     contentScale: ContentScale = ContentScale.Fit,
     placeholder: Boolean = true,
@@ -67,7 +67,7 @@ fun MainImage(
         },
         onError = {
             loading.value = false
-            if (data != null) {
+            if (data is String) {
                 loader.diskCache?.remove(data)
             }
             onError(it.result)

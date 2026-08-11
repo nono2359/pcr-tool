@@ -2,7 +2,6 @@ package cn.wthee.pcrtool.ui.skill
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -57,7 +56,6 @@ import cn.wthee.pcrtool.ui.theme.colorGold
 import cn.wthee.pcrtool.ui.theme.colorGreen
 import cn.wthee.pcrtool.ui.theme.colorPurple
 import cn.wthee.pcrtool.ui.theme.colorRed
-import cn.wthee.pcrtool.ui.theme.colorWhite
 import cn.wthee.pcrtool.utils.ImageRequestHelper
 import cn.wthee.pcrtool.utils.ImageRequestHelper.Companion.ICON_SKILL
 import kotlinx.serialization.encodeToString
@@ -472,7 +470,7 @@ fun SkillActionItem(
         MarkData('⌈', '⌋', MaterialTheme.colorScheme.primary),
         MarkData('<', '>', MaterialTheme.colorScheme.primary),
         MarkData('[', ']', colorGreen),
-        MarkData('(', ')', if (isSystemInDarkTheme()) colorWhite else Color.Black),
+        MarkData('(', ')', MaterialTheme.colorScheme.onSurface),
     )
 
 
