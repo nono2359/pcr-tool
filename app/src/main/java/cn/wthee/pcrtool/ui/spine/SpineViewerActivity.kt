@@ -22,8 +22,14 @@ import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.Alignment
 import androidx.core.net.toUri
 import cn.wthee.pcrtool.R
 import cn.wthee.pcrtool.data.enums.AppThemeMode
@@ -40,6 +46,9 @@ import java.io.File
 class SpineViewerActivity : ComponentActivity() {
     private lateinit var webView: WebView
     private lateinit var modelProvider: SpineModelProvider
+    private val backButtonVisible = mutableStateOf(true)
+    private val gifSaveReady = mutableStateOf(false)
+    private val gifSaved = mutableStateOf(false)
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -87,10 +96,26 @@ class SpineViewerActivity : ComponentActivity() {
                     setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
                     setContent {
                         PCRToolComposeTheme(darkTheme = viewerDark) {
-                            MainSmallFab(
-                                iconType = MainIconType.BACK,
-                                onClick = { finish() }
-                            )
+                            if (backButtonVisible.value) {
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    if (gifSaveReady.value) {
+                                        MainSmallFab(
+                                            iconType = if (gifSaved.value) MainIconType.DOWNLOAD_DONE else MainIconType.DOWNLOAD,
+                                            text = stringResource(
+                                                if (gifSaved.value) R.string.saved else R.string.title_dialog_save_img
+                                            ),
+                                            onClick = { webView.evaluateJavascript("window.pcrToolSaveGif()", null) }
+                                        )
+                                    }
+                                    MainSmallFab(
+                                        iconType = MainIconType.BACK,
+                                        onClick = { finish() }
+                                    )
+                                }
+                            }
                         }
                     }
                 },
@@ -132,27 +157,88 @@ class SpineViewerActivity : ComponentActivity() {
 
     inner class GifBridge {
         @JavascriptInterface
+        fun setBackButtonVisible(visible: Boolean) {
+            runOnUiThread { backButtonVisible.value = visible }
+        }
+
+        @JavascriptInterface
+        fun setGifState(ready: Boolean, saved: Boolean) {
+            runOnUiThread {
+                gifSaveReady.value = ready
+                gifSaved.value = saved
+            }
+        }
+
+        @JavascriptInterface
+        fun isGifSaved(fileName: String): Boolean = gifExists(safeGifName(fileName))
+
+        @JavascriptInterface
+        fun showGifExists(fileName: String) {
+            runOnUiThread {
+                Toast.makeText(this@SpineViewerActivity, "/Pictures/pcr/${safeGifName(fileName)} は保存済みです", Toast.LENGTH_LONG).show()
+            }
+        }
+
+        @JavascriptInterface
         fun saveGif(base64: String, fileName: String) {
             runCatching {
+                val savedName = safeGifName(fileName)
+                if (gifExists(savedName)) error("/Pictures/pcr/$savedName は保存済みです")
                 val bytes = Base64.decode(base64.substringAfter(','), Base64.DEFAULT)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     val values = ContentValues().apply {
-                        put(MediaStore.Downloads.DISPLAY_NAME, fileName)
-                        put(MediaStore.Downloads.MIME_TYPE, "image/gif")
-                        put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS + "/PCRTool")
+                        put(MediaStore.Images.Media.DISPLAY_NAME, savedName)
+                        put(MediaStore.Images.Media.MIME_TYPE, "image/gif")
+                        put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + "/pcr")
                     }
-                    val uri = contentResolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values) ?: error("保存先を作成できません")
-                    contentResolver.openOutputStream(uri)?.use { it.write(bytes) } ?: error("保存先を開けません")
+                    val uri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+                        ?: error("保存先を作成できません")
+                    contentResolver.openOutputStream(uri)?.use { it.write(bytes) }
+                        ?: error("保存先を開けません")
                 } else {
-                    val directory = getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS) ?: filesDir
+                    val directory = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "pcr")
                     directory.mkdirs()
-                    File(directory, fileName).writeBytes(bytes)
+                    File(directory, savedName).writeBytes(bytes)
                 }
-            }.onSuccess { runOnUiThread { Toast.makeText(this@SpineViewerActivity, "$fileName を保存しました", Toast.LENGTH_LONG).show() } }
-                .onFailure { error -> runOnUiThread { Toast.makeText(this@SpineViewerActivity, "GIF保存に失敗しました: ${error.message}", Toast.LENGTH_LONG).show() } }
+                savedName
+            }.onSuccess { savedName ->
+                runOnUiThread {
+                    Toast.makeText(this@SpineViewerActivity, "/Pictures/pcr/$savedName に保存しました", Toast.LENGTH_LONG).show()
+                    webView.evaluateJavascript("window.pcrToolGifSaved(${org.json.JSONObject.quote(savedName)})", null)
+                }
+            }.onFailure { error ->
+                runOnUiThread {
+                    Toast.makeText(this@SpineViewerActivity, "GIF保存に失敗しました: ${error.message}", Toast.LENGTH_LONG).show()
+                    webView.evaluateJavascript(
+                        "window.pcrToolGifSaveFailed(${org.json.JSONObject.quote(error.message ?: "保存できませんでした")})",
+                        null
+                    )
+                }
+            }
+        }
+
+        private fun safeGifName(requestedName: String): String =
+            requestedName.substringAfterLast('/').substringAfterLast('\\').ifBlank { "spine.gif" }
+
+        private fun gifExists(name: String): Boolean {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+                return File(
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
+                    "pcr/$name"
+                ).exists()
+            }
+            val projection = arrayOf(MediaStore.Images.Media._ID)
+            val selection = "${MediaStore.Images.Media.DISPLAY_NAME}=? AND ${MediaStore.Images.Media.RELATIVE_PATH}=?"
+            val args = arrayOf(name, Environment.DIRECTORY_PICTURES + "/pcr/")
+            return contentResolver.query(
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                projection,
+                selection,
+                args,
+                null
+            )?.use { it.moveToFirst() } == true
         }
     }
-
     override fun onDestroy() { webView.stopLoading(); webView.destroy(); super.onDestroy() }
 
     companion object {

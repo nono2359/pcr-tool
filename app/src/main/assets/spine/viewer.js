@@ -1,6 +1,7 @@
 (function () {
   "use strict";
   const params = new URLSearchParams(location.search);
+  window.PcrToolAndroid?.setBackButtonVisible(true);
   const unitId = params.get("unitId"), enemyId = params.get("enemyId"), rawType = params.get("type"), motionId=params.get("motionId")??"COMMON";
   const typeLabels = { "1": "バトル", "2": "ギルドハウス" };
   const details = document.querySelector("#request-details"), status = document.querySelector("#status"), message = document.querySelector("#stage-message");
@@ -98,7 +99,7 @@
     visibleAnimations.forEach(animation=>{const option=document.createElement("option");option.value=animation.name;option.textContent=animation.name;animationSelect.append(option);});
     if(!visibleAnimations.length)throw new Error(`モーションID ${motionId} に対応するアニメーションがありません。`);
     const initial=visibleAnimations.some(animation=>animation.name===model.animation)?model.animation:visibleAnimations[0].name;animationSelect.value=initial;state.setAnimation(0,initial,true);updateAnimationBounds(initial);
-    animationSelect.disabled=false;playbackButton.disabled=false;gifButton.disabled=false;message.hidden=true;
+    animationSelect.disabled=false;playbackButton.disabled=false;gifButton.disabled=false;message.hidden=true;updateGifSavedState();
   }
   function updateAnimationBounds(animationName){
     const animation=skeletonData.findAnimation(animationName);if(!animation)return;
@@ -108,7 +109,7 @@
     for(let index=0;index<=samples;index++){entry.trackTime=animation.duration*index/samples;probe.setToSetupPose();probeState.apply(probe);probe.updateWorldTransform();probe.getBounds(offset,size,[]);if(size.x>0&&size.y>0){left=Math.min(left,offset.x);bottom=Math.min(bottom,offset.y);right=Math.max(right,offset.x+size.x);top=Math.max(top,offset.y+size.y);}}
     if(Number.isFinite(left))bounds={offset:new spine.Vector2(left,bottom),size:new spine.Vector2(right-left,top-bottom)};
   }
-  animationSelect.addEventListener("change",()=>{skeleton.setToSetupPose();state.setAnimation(0,animationSelect.value,true);updateAnimationBounds(animationSelect.value);});
+  animationSelect.addEventListener("change",()=>{skeleton.setToSetupPose();state.setAnimation(0,animationSelect.value,true);updateAnimationBounds(animationSelect.value);updateGifSavedState();});
   playbackButton.addEventListener("click",()=>{paused=!paused;playbackButton.textContent=paused?"再生":"一時停止";});
   function resize(){
     const ratio=Math.min(devicePixelRatio||1,2),width=Math.max(1,Math.floor(canvas.clientWidth*ratio)),height=Math.max(1,Math.floor(canvas.clientHeight*ratio));
@@ -134,9 +135,11 @@
     try{return await window.showSaveFilePicker({suggestedName:name,types:[{description:"Animated GIF",accept:{"image/gif":[".gif"]}}]});}
     catch(error){if(error.name==="AbortError")throw error;console.warn("Save picker unavailable:",error);return null;}
   }
-  gifButton.addEventListener("click",async()=>{
+  async function startGifSave(){
     if(captureSession||!skeleton)return;
-    const name=gifFileName();let handle;
+    const name=gifFileName();
+    if(window.PcrToolAndroid?.isGifSaved?.(name)){window.PcrToolAndroid.showGifExists(name);updateGifSavedState();return;}
+    let handle;
     try{handle=await selectGifTarget(name);}catch{return;}
     const animation=skeleton.data.findAnimation(animationSelect.value),fps=30,speed=Number(speedSelect.value);
     if(!animation)return fail("選択したアニメーションが見つかりません。");
@@ -146,7 +149,9 @@
     animationSelect.disabled=true;playbackButton.disabled=true;speedSelect.disabled=true;gifButton.disabled=true;
     status.className="notice";status.textContent=`GIFフレームを生成中… 0/${frameCount}`;
     captureSession={name,handle,frameCount,index:0,step:1/fps,speed,frames:[],box:{left:Infinity,top:Infinity,right:-1,bottom:-1},restore};
-  });
+    window.PcrToolAndroid?.setGifState(false,false);
+  }
+  window.pcrToolSaveGif=startGifSave;
   function captureGifFrame(){
     const session=captureSession,source=document.createElement("canvas");source.width=canvas.width;source.height=canvas.height;
     const context=source.getContext("2d",{willReadFrequently:true});context.drawImage(canvas,0,0);
@@ -163,7 +168,7 @@
   }
   function restoreAfterCapture(session){
     const entry=state.setAnimation(0,session.restore.animation,true);entry.trackTime=session.restore.time;paused=session.restore.paused;
-    animationSelect.disabled=false;playbackButton.disabled=false;speedSelect.disabled=false;gifButton.disabled=false;
+    animationSelect.disabled=false;playbackButton.disabled=false;speedSelect.disabled=false;gifButton.disabled=false;updateGifSavedState();
   }
   function encodeGif(session){
     if(session.box.right<session.box.left)return fail("描画されたフレームが見つかりませんでした。");
@@ -187,12 +192,19 @@
   }
   async function saveGifBlob(blob,session){
     try{
-      if(window.PcrToolAndroid?.saveGif){const dataUrl=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=()=>reject(reader.error);reader.readAsDataURL(blob);});window.PcrToolAndroid.saveGif(dataUrl,session.name);}
+      if(window.PcrToolAndroid?.saveGif){const dataUrl=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=()=>reject(reader.error);reader.readAsDataURL(blob);});status.className="notice";status.textContent="GIFを保存中…";window.PcrToolAndroid.saveGif(dataUrl,session.name);return;}
       else if(session.handle){const writable=await session.handle.createWritable();await writable.write(blob);await writable.close();}
       else{const url=URL.createObjectURL(blob),link=document.createElement("a");link.href=url;link.download=session.name;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
       status.className="success";status.textContent=`${session.name}を保存しました。`;
     }catch(error){fail(`GIFの保存に失敗しました: ${error.message}`);}
-  }  const characterDialog=document.querySelector("#character-dialog"),characterList=document.querySelector("#character-list"),characterSearch=document.querySelector("#character-search");
+  }
+  function updateGifSavedState(){
+    if(!window.PcrToolAndroid?.isGifSaved||!model||animationSelect.disabled)return;
+    const saved=window.PcrToolAndroid.isGifSaved(gifFileName());gifButton.textContent=saved?"保存済み":"GIF保存";gifButton.dataset.saved=String(saved);window.PcrToolAndroid.setGifState(true,saved);
+  }
+  window.pcrToolGifSaved=name=>{status.className="success";status.textContent=`${name}をPictures/pcrに保存しました。`;updateGifSavedState();};
+  window.pcrToolGifSaveFailed=reason=>{fail(`GIFの保存に失敗しました: ${reason}`);updateGifSavedState();};
+  const characterDialog=document.querySelector("#character-dialog"),characterList=document.querySelector("#character-list"),characterSearch=document.querySelector("#character-search");
   const rarity6=document.querySelector("#rarity-6"),selectorNote=document.querySelector("#selector-note"),rarityOptions=document.querySelector("#rarity-options"),previewOptions=document.querySelector("#preview-options");
   let selectableUnits=null,selectableEnemies=null,selectableClanBosses=null,selectableClanBattle=null;
   const currentUnitBase=unitId===null?null:Number(unitId)-Number(unitId)%100+1,currentEnemy=enemyId===null?null:Number(enemyId);
@@ -232,15 +244,17 @@
       const initialTarget=enemyId!==null?(params.get("source")==="clan"?"clan":"enemy"):"unit",targetRadio=document.querySelector(`input[name="selector-target"][value="${initialTarget}"]`);targetRadio.checked=true;await loadTargetList();
       if(unitId!==null){const suffix=Number(unitId)%100,rarity=suffix===31?"3":suffix===61?"6":"default",radio=document.querySelector(`input[name="model-rarity"][value="${rarity}"]`);if(radio&&!radio.disabled)radio.checked=true;}
       const previewRadio=document.querySelector(`input[name="preview-type"][value="${rawType??"1"}"]`);if(previewRadio&&!previewRadio.disabled)previewRadio.checked=true;
-      configureSelectorOptions();characterDialog.showModal();characterSearch.focus();
+      configureSelectorOptions();window.PcrToolAndroid?.setBackButtonVisible(false);characterDialog.showModal();characterSearch.focus();
     }catch(error){selectorFail(error.message);}
   }
   document.querySelector("#open-selector").addEventListener("click",openCharacterDialog);
+  characterDialog.addEventListener("close",()=>window.PcrToolAndroid?.setBackButtonVisible(true));
   characterSearch.addEventListener("input",renderUnitList);
   document.querySelectorAll('input[name="character-sort"]').forEach(radio=>radio.addEventListener("change",renderUnitList));
   document.querySelectorAll('input[name="selector-target"]').forEach(radio=>radio.addEventListener("change",()=>loadTargetList().catch(error=>selectorFail(error.message))));
   document.querySelector("#show-character").addEventListener("click",()=>{
     const base=selectedModelId();if(!base)return;
+    window.PcrToolAndroid?.setBackButtonVisible(true);
     const theme=encodeURIComponent(params.get("theme")??document.documentElement.dataset.theme??"system");
     if(selectorTarget()!=="unit"){const source=selectorTarget()==="clan"?"&source=clan":"";location.href=`${location.pathname}?enemyId=${base}&type=1${source}&theme=${theme}`;return;}
     const rarity=document.querySelector('input[name="model-rarity"]:checked').value,target=rarity==="3"?base+30:rarity==="6"?base+60:base;

@@ -40,6 +40,7 @@ import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
@@ -348,7 +349,7 @@ fun SharedTransitionScope.CharacterItemContent(
     }
     //主要字体颜色
     val textColor = if (imageLoadSuccess) {
-        MaterialTheme.colorScheme.surface
+        colorWhite
     } else {
         MaterialTheme.colorScheme.onSurface
     }
@@ -788,9 +789,20 @@ private fun SharedTransitionScope.CharacterIcon(
         if (character.roleId != 0) {
             val roleType = RoleType.getByType(character.roleId)
             Tag(
-                text = stringResource(id = roleType.typeNameId),
+                text = when (roleType) {
+                    RoleType.ATTACKER -> "ATCK"
+                    RoleType.BREAKER -> "BRKR"
+                    RoleType.BUFFER -> "BUFF"
+                    RoleType.DEBUFFER -> "DEBF"
+                    RoleType.BOOSTER -> "BSTR"
+                    RoleType.HEALER -> "HEAL"
+                    RoleType.TANK -> "TANK"
+                    RoleType.JAMMER -> "JAMM"
+                    RoleType.ALL -> "ROLE"
+                },
                 backgroundColor = roleType.color,
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp),
+                horizontalPadding = 2.dp,
             )
         }
 
@@ -807,7 +819,7 @@ private fun SharedTransitionScope.CharacterIcon(
 @Composable
 private fun StarText(
     character: CharacterInfo,
-    color: Color = Color.Unspecified,
+    color: Color = MaterialTheme.colorScheme.onSurface,
     sixStarColor: Color = colorPink,
     compact: Boolean = false,
 ) {
@@ -932,4 +944,3 @@ fun CharacterItemPreview() {
         }
     }
 }
-

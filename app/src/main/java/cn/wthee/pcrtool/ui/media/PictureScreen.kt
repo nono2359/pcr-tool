@@ -53,7 +53,6 @@ import cn.wthee.pcrtool.ui.theme.CombinedPreviews
 import cn.wthee.pcrtool.ui.theme.Dimen
 import cn.wthee.pcrtool.ui.theme.FadeAnimation
 import cn.wthee.pcrtool.ui.theme.PreviewLayout
-import cn.wthee.pcrtool.ui.theme.RATIO_GOLDEN
 import cn.wthee.pcrtool.ui.theme.noShape
 import cn.wthee.pcrtool.utils.ImageRequestHelper
 import cn.wthee.pcrtool.utils.MediaDownloadHelper
@@ -146,9 +145,8 @@ private fun PictureScreenContent(uiState: PictureUiState) {
             MainTabRow(
                 pagerState = pagerState,
                 tabs = tabs,
-                modifier = Modifier
-                    .fillMaxWidth(RATIO_GOLDEN)
-                    .align(Alignment.CenterHorizontally)
+                scrollable = true,
+                modifier = Modifier.fillMaxWidth()
             )
         }
 

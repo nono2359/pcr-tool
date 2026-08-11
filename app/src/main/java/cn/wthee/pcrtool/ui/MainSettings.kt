@@ -56,6 +56,7 @@ import cn.wthee.pcrtool.ui.components.MainText
 import cn.wthee.pcrtool.ui.components.SCALE_LOGO
 import cn.wthee.pcrtool.ui.components.Subtitle1
 import cn.wthee.pcrtool.ui.components.Subtitle2
+import cn.wthee.pcrtool.ui.spine.SpineViewerActivity
 import cn.wthee.pcrtool.ui.theme.CombinedPreviews
 import cn.wthee.pcrtool.ui.theme.Dimen
 import cn.wthee.pcrtool.ui.theme.PreviewLayout
@@ -182,7 +183,7 @@ fun MainSettings() {
                 title = stringResource(id = R.string.title_spine),
                 summary = stringResource(id = R.string.spine_tip),
                 onClick = {
-                    BrowserUtil.open(Constants.PREVIEW_URL)
+                    SpineViewerActivity.open(context, Constants.PREVIEW_URL)
                 }
             )
             //- 爱发电
