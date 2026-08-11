@@ -21,6 +21,7 @@ import cn.wthee.pcrtool.R
 import cn.wthee.pcrtool.data.enums.MainIconType
 import cn.wthee.pcrtool.data.enums.PositionType
 import cn.wthee.pcrtool.ui.theme.Dimen
+import cn.wthee.pcrtool.ui.theme.adaptiveForegroundColor
 import cn.wthee.pcrtool.utils.VibrateUtil
 import coil3.compose.AsyncImage
 import coil3.compose.rememberAsyncImagePainter
@@ -132,6 +133,7 @@ fun MainIcon(
 ) {
     val context = LocalContext.current
     val shape = MaterialTheme.shapes.extraSmall
+    val foregroundTint = adaptiveForegroundColor(tint, minimumContrast = 3f)
 
     val mModifier = modifier
         .clip(shape)
@@ -160,7 +162,7 @@ fun MainIcon(
             Icon(
                 imageVector = data.icon,
                 contentDescription = null,
-                tint = tint,
+                tint = foregroundTint,
                 modifier = mModifier
             )
         }
@@ -169,7 +171,7 @@ fun MainIcon(
             Icon(
                 imageVector = data,
                 contentDescription = null,
-                tint = tint,
+                tint = foregroundTint,
                 modifier = mModifier
             )
         }

@@ -37,6 +37,7 @@
   requestAnimationFrame(fitStageHeight);
   if(!gl){fail("この環境ではWebGLを利用できません。");return;}
   const shader=spine.webgl.Shader.newTwoColoredTextured(gl),batcher=new spine.webgl.PolygonBatcher(gl),renderer=new spine.webgl.SkeletonRenderer(gl),mvp=new spine.webgl.Matrix4();
+  const gifSize=256,gifContentSize=248,gifAlphaCutoff=8;
   let skeleton,skeletonData,state,bounds,paused=false,lastFrame=performance.now()/1000,model,assets,binaryData=null,binaryDone=false,binaryError=null,captureSession=null;
   const sample={name:"Spine公式サンプル（描画確認用）",format:"json",skeleton:"assets/sample/spineboy-ess.json",atlas:"assets/sample/spineboy.atlas",animation:"run",premultipliedAlpha:true};
   async function chooseModel(){
@@ -157,7 +158,7 @@
     const context=source.getContext("2d",{willReadFrequently:true});context.drawImage(canvas,0,0);
     const pixels=context.getImageData(0,0,source.width,source.height),data=pixels.data;
     let left=source.width,top=source.height,right=-1,bottom=-1;
-    for(let y=0;y<source.height;y++)for(let x=0;x<source.width;x++)if(data[(y*source.width+x)*4+3]>8){if(x<left)left=x;if(x>right)right=x;if(y<top)top=y;if(y>bottom)bottom=y;}
+    for(let y=0;y<source.height;y++)for(let x=0;x<source.width;x++)if(data[(y*source.width+x)*4+3]>gifAlphaCutoff){if(x<left)left=x;if(x>right)right=x;if(y<top)top=y;if(y>bottom)bottom=y;}
     if(right>=left){
       const width=right-left+1,height=bottom-top+1;
       session.frames.push({image:context.getImageData(left,top,width,height),left,top,width,height});
@@ -175,15 +176,21 @@
     status.textContent="GIFをエンコード中…";
     const unionWidth=session.box.right-session.box.left+1,unionHeight=session.box.bottom-session.box.top+1;
     const staging=document.createElement("canvas");staging.width=unionWidth;staging.height=unionHeight;const stagingContext=staging.getContext("2d");
-    const output=document.createElement("canvas");output.width=128;output.height=128;const outputContext=output.getContext("2d");
-    const scale=Math.min(124/unionWidth,124/unionHeight),drawWidth=Math.max(1,Math.round(unionWidth*scale)),drawHeight=Math.max(1,Math.round(unionHeight*scale)),dx=Math.floor((128-drawWidth)/2),dy=Math.floor((128-drawHeight)/2);
-    const encoder=new GIF({workers:2,quality:10,width:128,height:128,transparent:0xff00ff,workerScript:"./vendor/gif.worker.js",repeat:0});
+    const output=document.createElement("canvas");output.width=gifSize;output.height=gifSize;const outputContext=output.getContext("2d");
+    const scale=Math.min(gifContentSize/unionWidth,gifContentSize/unionHeight),drawWidth=Math.max(1,Math.round(unionWidth*scale)),drawHeight=Math.max(1,Math.round(unionHeight*scale)),dx=Math.floor((gifSize-drawWidth)/2),dy=Math.floor((gifSize-drawHeight)/2);
+    const encoder=new GIF({workers:2,quality:10,width:gifSize,height:gifSize,transparent:0xff00ff,globalPalette:true,workerScript:"./vendor/gif.worker.js",repeat:0});
     session.frames.forEach(frame=>{
       stagingContext.clearRect(0,0,unionWidth,unionHeight);if(frame)stagingContext.putImageData(frame.image,frame.left-session.box.left,frame.top-session.box.top);
-      outputContext.clearRect(0,0,128,128);outputContext.drawImage(staging,0,0,unionWidth,unionHeight,dx,dy,drawWidth,drawHeight);
-      const rgba=outputContext.getImageData(0,0,128,128),pixels=rgba.data;
+      outputContext.clearRect(0,0,gifSize,gifSize);outputContext.drawImage(staging,0,0,unionWidth,unionHeight,dx,dy,drawWidth,drawHeight);
+      const rgba=outputContext.getImageData(0,0,gifSize,gifSize),pixels=rgba.data;
       for(let index=0;index<pixels.length;index+=4){
-        if(pixels[index+3]<96){pixels[index]=255;pixels[index+1]=0;pixels[index+2]=255;}pixels[index+3]=255;
+        const alpha=pixels[index+3];
+        if(alpha<=gifAlphaCutoff){pixels[index]=255;pixels[index+1]=0;pixels[index+2]=255;}
+        else if(alpha<255&&pixels[index]*.2126+pixels[index+1]*.7152+pixels[index+2]*.0722<96){
+          const opacity=alpha/255;
+          pixels[index]=Math.round(255+(pixels[index]-255)*opacity);pixels[index+1]=Math.round(255+(pixels[index+1]-255)*opacity);pixels[index+2]=Math.round(255+(pixels[index+2]-255)*opacity);
+        }
+        pixels[index+3]=255;
       }
       outputContext.putImageData(rgba,0,0);encoder.addFrame(outputContext,{copy:true,delay:Math.round(1000/30)});
     });

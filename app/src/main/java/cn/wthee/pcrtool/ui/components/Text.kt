@@ -39,6 +39,7 @@ import cn.wthee.pcrtool.ui.skill.ColorTextIndex
 import cn.wthee.pcrtool.ui.theme.CombinedPreviews
 import cn.wthee.pcrtool.ui.theme.Dimen
 import cn.wthee.pcrtool.ui.theme.PreviewLayout
+import cn.wthee.pcrtool.ui.theme.adaptiveForegroundColor
 import cn.wthee.pcrtool.ui.theme.colorWhite
 import cn.wthee.pcrtool.utils.VibrateUtil
 import cn.wthee.pcrtool.utils.getFormatText
@@ -94,7 +95,7 @@ fun MainContentText(
         Text(
             text = text,
             textAlign = textAlign,
-            color = color,
+            color = adaptiveForegroundColor(color),
             style = textStyle,
             fontFamily = fontFamily,
             modifier = if (selectable) Modifier else modifier,
@@ -128,7 +129,7 @@ fun MainText(
     val content: @Composable () -> Unit = {
         Text(
             text = text,
-            color = color,
+            color = adaptiveForegroundColor(color),
             style = style,
             textAlign = textAlign,
             fontWeight = FontWeight.Black,
@@ -159,7 +160,7 @@ fun Subtitle1(
     val content: @Composable () -> Unit = {
         Text(
             text = text,
-            color = color,
+            color = adaptiveForegroundColor(color),
             textAlign = textAlign,
             style = style,
             modifier = if (selectable) Modifier else modifier,
@@ -192,7 +193,7 @@ fun Subtitle2(
     val content: @Composable () -> Unit = {
         Text(
             text = text,
-            color = color,
+            color = adaptiveForegroundColor(color),
             textAlign = textAlign,
             style = style,
             modifier = if (selectable) Modifier else modifier,
@@ -224,7 +225,7 @@ fun CaptionText(
     Text(
         text = text,
         textAlign = textAlign,
-        color = color,
+        color = adaptiveForegroundColor(color),
         fontFamily = fontFamily,
         style = style,
         modifier = modifier,
@@ -328,7 +329,7 @@ fun HeaderText(
         text = text,
         style = MaterialTheme.typography.titleLarge,
         fontWeight = FontWeight.Bold,
-        color = color,
+        color = adaptiveForegroundColor(color),
         modifier = modifier
     )
 }
@@ -495,6 +496,7 @@ fun ColorText(
  */
 @Composable
 fun getColorText(color: Color, text: String): AnnotatedString {
+    val foregroundColor = adaptiveForegroundColor(color)
     val mark0 = arrayListOf<ColorTextIndex>()
     text.forEachIndexed { index, c ->
         if (c == '[') {
@@ -512,7 +514,7 @@ fun getColorText(color: Color, text: String): AnnotatedString {
                 if (index >= it.start && index <= it.end) {
                     withStyle(
                         style = SpanStyle(
-                            color = color,
+                            color = foregroundColor,
                             fontWeight = FontWeight.Bold
                         )
                     ) {
