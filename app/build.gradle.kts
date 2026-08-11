@@ -12,8 +12,8 @@ hilt {
     enableAggregatingTask = true
 }
 
-val appVersionCode = 40108
-val appVersionName = "4.0.1-jp.8"
+val appVersionCode = 40109
+val appVersionName = "4.0.1-jp.9"
 val appId = "jp.nono2359.pcrtool"
 val releaseStoreFile = providers.environmentVariable("PCR_RELEASE_STORE_FILE")
 val releaseStorePassword = providers.environmentVariable("PCR_RELEASE_STORE_PASSWORD")

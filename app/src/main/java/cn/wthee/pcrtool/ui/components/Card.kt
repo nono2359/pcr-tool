@@ -1,5 +1,7 @@
 package cn.wthee.pcrtool.ui.components
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,10 +25,12 @@ import cn.wthee.pcrtool.utils.VibrateUtil
  * 卡片布局
  * @param onClick 自带点击振动
  */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MainCard(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
+    onDoubleClick: (() -> Unit)? = null,
     shape: CornerBasedShape = MaterialTheme.shapes.medium,
     containerColor: Color = MaterialTheme.colorScheme.surfaceVariant,
     fillMaxWidth: Boolean = true,
@@ -43,12 +47,28 @@ fun MainCard(
                 Modifier
             }
         )
+        .then(
+            if (onDoubleClick != null) {
+                Modifier.combinedClickable(
+                    onClick = {
+                        VibrateUtil(context).single()
+                        onClick?.invoke()
+                    },
+                    onDoubleClick = {
+                        VibrateUtil(context).single()
+                        onDoubleClick()
+                    }
+                )
+            } else {
+                Modifier
+            }
+        )
     //阴影
     val cardElevation = CardDefaults.elevatedCardElevation(
         defaultElevation = elevation
     )
 
-    if (onClick != null) {
+    if (onClick != null && onDoubleClick == null) {
         ElevatedCard(
             modifier = mModifier,
             onClick = {

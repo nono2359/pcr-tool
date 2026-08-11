@@ -2,6 +2,9 @@ package cn.wthee.pcrtool.ui.media
 
 import androidx.annotation.OptIn
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.rememberTransformableState
+import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,6 +15,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -23,11 +27,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.Lifecycle
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
@@ -50,12 +61,14 @@ import cn.wthee.pcrtool.ui.components.LifecycleEffect
 import cn.wthee.pcrtool.ui.components.MainAlertDialog
 import cn.wthee.pcrtool.ui.components.MainCard
 import cn.wthee.pcrtool.ui.components.MainScaffold
+import cn.wthee.pcrtool.ui.components.MainSmallFab
 import cn.wthee.pcrtool.ui.components.MainTitleText
 import cn.wthee.pcrtool.ui.components.RATIO
 import cn.wthee.pcrtool.ui.components.SelectText
 import cn.wthee.pcrtool.ui.theme.CombinedPreviews
 import cn.wthee.pcrtool.ui.theme.Dimen
 import cn.wthee.pcrtool.ui.theme.ExpandAnimation
+import cn.wthee.pcrtool.ui.theme.FadeAnimation
 import cn.wthee.pcrtool.ui.theme.PreviewLayout
 import cn.wthee.pcrtool.utils.BrowserUtil
 import cn.wthee.pcrtool.utils.Constants
@@ -135,6 +148,11 @@ fun VideoPlayer(url: String) {
         mutableStateOf(false)
     }
 
+    //全画面拡大表示
+    var previewExpanded by remember(url) {
+        mutableStateOf(false)
+    }
+
 
     //视频源
     val mediaSource = ProgressiveMediaSource.Factory(
@@ -210,15 +228,24 @@ fun VideoPlayer(url: String) {
             if (!playError && !loading) {
                 expanded = !expanded
             }
+        },
+        onDoubleClick = {
+            if (!playError && !loading) {
+                previewExpanded = true
+            }
         }
     ) {
         //播放器组件
-        MainPlayView(
-            exoPlayer = exoPlayer,
-            ratio = ratio,
-            loading = loading,
-            playError = playError,
-        )
+        if (previewExpanded) {
+            Box(modifier = Modifier.fillMaxWidth().aspectRatio(ratio))
+        } else {
+            MainPlayView(
+                exoPlayer = exoPlayer,
+                ratio = ratio,
+                loading = loading,
+                playError = playError,
+            )
+        }
 
         //功能按钮
         ExpandAnimation(expanded && !playError) {
@@ -235,6 +262,95 @@ fun VideoPlayer(url: String) {
         }
     }
 
+    if (previewExpanded) {
+        VideoPreviewDialog(
+            exoPlayer = exoPlayer,
+            ratio = ratio,
+            loading = loading,
+            playError = playError,
+            onDismiss = { previewExpanded = false }
+        )
+    }
+
+}
+
+/**
+ * 全画面视频预览。双击切换放大，捏合缩放，拖动平移。
+ */
+@OptIn(UnstableApi::class)
+@Composable
+private fun VideoPreviewDialog(
+    exoPlayer: ExoPlayer,
+    ratio: Float,
+    loading: Boolean,
+    playError: Boolean,
+    onDismiss: () -> Unit
+) {
+    var scale by remember { mutableFloatStateOf(1f) }
+    var rotation by remember { mutableFloatStateOf(0f) }
+    var offset by remember { mutableStateOf(Offset.Zero) }
+    val transformableState = rememberTransformableState { zoomChange, offsetChange, rotationChange ->
+        val nextScale = (scale * zoomChange).coerceIn(1f, 5f)
+        offset = if (nextScale == 1f) Offset.Zero else offset + offsetChange * nextScale
+        scale = nextScale
+        rotation += rotationChange
+    }
+
+    fun resetTransform() {
+        scale = 1f
+        rotation = 0f
+        offset = Offset.Zero
+    }
+
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(
+            usePlatformDefaultWidth = false,
+            decorFitsSystemWindows = false
+        )
+    ) {
+        MainScaffold(
+            modifier = Modifier.navigationBarsPadding(),
+            contentAlignment = Alignment.Center,
+            fab = {
+                FadeAnimation(scale != 1f || rotation != 0f || offset != Offset.Zero) {
+                    MainSmallFab(
+                        iconType = MainIconType.RESET,
+                        onClick = ::resetTransform
+                    )
+                }
+            },
+            onMainFabClick = onDismiss,
+            enableClickClose = true,
+            onCloseClick = onDismiss,
+            backgroundColor = Color.Transparent
+        ) {
+            MainPlayView(
+                exoPlayer = exoPlayer,
+                ratio = ratio,
+                loading = loading,
+                playError = playError,
+                modifier = Modifier
+                    .graphicsLayer(
+                        scaleX = scale,
+                        scaleY = scale,
+                        rotationZ = rotation,
+                        translationX = offset.x,
+                        translationY = offset.y
+                    )
+                    .pointerInput(Unit) {
+                        detectTapGestures(
+                            onDoubleTap = {
+                                if (scale == 1f) scale = 2.5f else resetTransform()
+                            }
+                        )
+                    }
+                    .transformable(transformableState)
+                    .zIndex(99f)
+                    .padding(horizontal = Dimen.mediumPadding)
+            )
+        }
+    }
 }
 
 /**
@@ -448,7 +564,8 @@ private fun MainPlayView(
     exoPlayer: ExoPlayer,
     ratio: Float,
     loading: Boolean,
-    playError: Boolean
+    playError: Boolean,
+    modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
 
@@ -463,7 +580,7 @@ private fun MainPlayView(
                     player = exoPlayer
                 }
             },
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxWidth()
                 .aspectRatio(ratio = ratio)
         )
