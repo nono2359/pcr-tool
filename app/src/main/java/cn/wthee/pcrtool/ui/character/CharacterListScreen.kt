@@ -5,6 +5,7 @@ import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -37,6 +39,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -79,6 +82,7 @@ import cn.wthee.pcrtool.ui.components.MainText
 import cn.wthee.pcrtool.ui.components.MainTitleText
 import cn.wthee.pcrtool.ui.components.PositionIcon
 import cn.wthee.pcrtool.ui.components.RoleIcon
+import cn.wthee.pcrtool.ui.components.TalentIcon
 import cn.wthee.pcrtool.ui.components.RATIO
 import cn.wthee.pcrtool.ui.components.StateBox
 import cn.wthee.pcrtool.ui.components.Subtitle1
@@ -782,19 +786,20 @@ private fun SharedTransitionScope.CharacterIcon(
                     MainContentText(text = "${character.birthMonth}/${character.birthDay}")
 
                 CharacterSortType.SORT_POSITION -> MainContentText(text = character.position.toString())
-                else -> StarText(character)
+                else -> StarIconText(character)
             }
         }
 
-        //职能
-        if (character.roleId != 0) {
-            val roleType = RoleType.getByType(character.roleId)
-            RoleIcon(roleType = roleType)
-        }
-
-        //天赋
-        if (character.talentId != 0) {
-            Dot(color = TalentType.getByType(character.talentId).color)
+        Row(
+            modifier = Modifier.padding(top = Dimen.linePadding),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            if (character.roleId != 0) {
+                RoleIcon(roleType = RoleType.getByType(character.roleId))
+            }
+            if (character.talentId != 0) {
+                TalentIcon(talentType = TalentType.getByType(character.talentId))
+            }
         }
     }
 }
@@ -802,6 +807,28 @@ private fun SharedTransitionScope.CharacterIcon(
 /**
  * 角色星级
  */
+@Composable
+private fun StarIconText(character: CharacterInfo) {
+    val isSixStar = character.r6Id != 0
+    Row(
+        modifier = Modifier.padding(top = Dimen.linePadding),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Image(
+            painter = painterResource(
+                if (isSixStar) R.drawable.ic_star_pink else R.drawable.ic_star
+            ),
+            contentDescription = null,
+            modifier = Modifier.size(Dimen.smallerIconSize),
+        )
+        CaptionText(
+            text = (if (isSixStar) 6 else character.rarity).toString(),
+            color = if (isSixStar) colorPink else MaterialTheme.colorScheme.onSurface,
+        )
+    }
+}
+
+
 @Composable
 private fun StarText(
     character: CharacterInfo,

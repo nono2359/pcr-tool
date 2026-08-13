@@ -40,6 +40,7 @@ import cn.wthee.pcrtool.ui.components.MainTabRow
 import cn.wthee.pcrtool.ui.components.MainText
 import cn.wthee.pcrtool.ui.components.MainTitleText
 import cn.wthee.pcrtool.ui.components.RoleIcon
+import cn.wthee.pcrtool.ui.components.TalentIcon
 import cn.wthee.pcrtool.ui.components.StateBox
 import cn.wthee.pcrtool.ui.components.TabData
 import cn.wthee.pcrtool.ui.components.Tag
@@ -311,7 +312,7 @@ fun UnitAtkTypeList(
             } else if (listType == TalentRoleListType.ROLE) {
                 //天赋信息
                 if (unit.talentId != 0) {
-                    Dot(color = TalentType.getByType(unit.talentId).color)
+                    TalentIcon(talentType = TalentType.getByType(unit.talentId))
                 }
 
             }

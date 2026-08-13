@@ -133,12 +133,12 @@ val Double.intStr: String
 /**
  * 复制文本
  */
-fun copyText(context: Context, text: String) {
+fun copyText(context: Context, text: String, successMessage: String? = null) {
     val clipboardManager =
         context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
     val mClipData = ClipData.newPlainText("OcrText", text)
     clipboardManager.setPrimaryClip(mClipData)
-    ToastUtil.short(getString(R.string.copy_success))
+    ToastUtil.short(successMessage ?: getString(R.string.copy_success))
 }
 
 /**

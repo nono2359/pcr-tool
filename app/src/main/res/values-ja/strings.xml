@@ -1,4 +1,4 @@
-﻿<resources>
+<resources>
 
     <!-- キャラ関連 -->
     <string name="date_m_d">%1$s月 %2$s日</string>
@@ -205,7 +205,7 @@
     <string name="result">ステータス変化</string>
     <string name="character_name">キャラ名</string>
     <string name="tweet">日本サーバー情報</string>
-    <string name="comic">1コマ漫画</string>
+    <string name="comic">コミック</string>
     <string name="comic_4">4コマ漫画</string>
     <string name="comic_toc">目次</string>
     <string name="comic_toc_index">第%d話</string>
@@ -262,7 +262,7 @@
     <string name="tool_unique_equip">専用装備</string>
     <string name="search_unique_equip">装備名/キャラ名</string>
     <string name="character_detail">キャラ詳細</string>
-    <string name="tool_load_comic">1コマ漫画一覧</string>
+    <string name="tool_load_comic">コミック一覧</string>
     <string name="description">説明</string>
 
     <!-- アリーナ検索 -->
@@ -335,6 +335,7 @@
     <string name="save_error">保存中にエラーが発生しました</string>
     <string name="download_failure">ダウンロードに失敗しました</string>
     <string name="copy_success">テキストをコピーしました</string>
+    <string name="skill_detail_copy_success">%1$s の詳細をコピーしました</string>
     <string name="title_api_request_error">ネットワーク通信エラー</string>
     <string name="title_dialog_delete">削除</string>
     <string name="title_dialog_save_img">画像を保存</string>
@@ -453,7 +454,7 @@
     <string name="skill_type_12">暗闇</string>
     <string name="skill_type_13">沈黙</string>
     <string name="skill_type_14">モード変更</string>
-    <string name="skill_type_15">召喚</string>
+    <string name="skill_type_15"></string>
     <string name="skill_type_16_92">TP</string>
     <string name="skill_type_17">状態</string>
     <string name="skill_type_18_19">チャージ</string>
@@ -541,7 +542,7 @@
 
     <!-- スキル対象タイプ関連 -->
     <string name="skill_area_include_flight">飛行ユニットを含む</string>
-    <string name="skill_area_without_summon">召喚獣とクローンを除く</string>
+    <string name="skill_area_without_summon">召喚体とクローンを除く</string>
     <string name="skill_target_none">対象</string>
     <string name="skill_target_2_8">ランダム</string>
     <string name="skill_target_3">最も近い</string>

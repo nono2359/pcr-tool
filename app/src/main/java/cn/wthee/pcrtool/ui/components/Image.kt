@@ -23,6 +23,7 @@ import cn.wthee.pcrtool.R
 import cn.wthee.pcrtool.data.enums.MainIconType
 import cn.wthee.pcrtool.data.enums.PositionType
 import cn.wthee.pcrtool.data.enums.RoleType
+import cn.wthee.pcrtool.data.enums.TalentType
 import cn.wthee.pcrtool.ui.theme.Dimen
 import cn.wthee.pcrtool.ui.theme.adaptiveForegroundColor
 import cn.wthee.pcrtool.utils.VibrateUtil
@@ -118,10 +119,25 @@ fun PositionIcon(
 }
 
 @Composable
+fun TalentIcon(
+    talentType: TalentType,
+    modifier: Modifier = Modifier,
+    size: Dp = Dimen.smallerIconSize,
+) {
+    if (talentType.iconId == 0) return
+    Image(
+        painter = painterResource(talentType.iconId),
+        contentDescription = stringResource(talentType.typeNameId),
+        modifier = modifier.size(size),
+    )
+}
+
+
+@Composable
 fun RoleIcon(
     roleType: RoleType,
     modifier: Modifier = Modifier,
-    size: Dp = Dimen.textIconSize,
+    size: Dp = Dimen.smallerIconSize,
 ) {
     if (roleType.iconId == 0) return
     Image(

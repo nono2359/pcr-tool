@@ -1,4 +1,4 @@
-package cn.wthee.pcrtool.ui.tool.enemy
+﻿package cn.wthee.pcrtool.ui.tool.enemy
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -24,6 +24,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -48,6 +49,7 @@ import cn.wthee.pcrtool.ui.components.MainScaffold
 import cn.wthee.pcrtool.ui.components.MainText
 import cn.wthee.pcrtool.ui.components.Subtitle2
 import cn.wthee.pcrtool.ui.components.Tag
+import cn.wthee.pcrtool.ui.components.TalentIcon
 import cn.wthee.pcrtool.ui.skill.SkillItemContent
 import cn.wthee.pcrtool.ui.skill.loop.SkillLoopScreen
 import cn.wthee.pcrtool.ui.theme.CombinedPreviews
@@ -175,10 +177,16 @@ fun EnemyDetailContent(
             selectable = true
         )
         //等级
-        CaptionText(
-            text = stringResource(id = R.string.unit_level, enemyData.level),
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        )
+        Row(
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            CaptionText(text = "${stringResource(id = R.string.title_unit_level)}: ")
+            CaptionText(
+                text = enemyData.level.toString(),
+                fontFamily = FontFamily.Default,
+            )
+        }
 
         //模型预览
         IconTextButton(
@@ -354,10 +362,8 @@ fun EnemyWeaknessContent(
                             }
                     )
                 } else {
-                    //显示圆点
-                    Dot(
-                        color = talentType.color
-                    )
+                    //显示属性图标
+                    TalentIcon(talentType = talentType)
                 }
 
             }

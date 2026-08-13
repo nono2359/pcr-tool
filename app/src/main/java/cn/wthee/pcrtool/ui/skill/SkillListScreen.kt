@@ -1,7 +1,8 @@
-package cn.wthee.pcrtool.ui.skill
+﻿package cn.wthee.pcrtool.ui.skill
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,8 +20,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -58,6 +62,7 @@ import cn.wthee.pcrtool.ui.theme.colorPurple
 import cn.wthee.pcrtool.ui.theme.colorRed
 import cn.wthee.pcrtool.utils.ImageRequestHelper
 import cn.wthee.pcrtool.utils.ImageRequestHelper.Companion.ICON_SKILL
+import cn.wthee.pcrtool.utils.copyText
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
@@ -332,6 +337,28 @@ fun SkillItemContent(
     val name =
         if (unitType == UnitType.ENEMY || unitType == UnitType.ENEMY_SUMMON) type else skillDetail.name
     val url = ImageRequestHelper.getInstance().getUrl(ICON_SKILL, skillDetail.iconType)
+    val context = LocalContext.current
+    val tags = getTags(actionData)
+    val metaTexts = buildList {
+        add(type)
+        if (unitType == UnitType.ENEMY || unitType == UnitType.ENEMY_SUMMON) {
+            add(context.getString(R.string.skill_level, skillDetail.level))
+            if (skillDetail.bossUbCooltime > 0.0) {
+                add(context.getString(R.string.skill_cooltime, skillDetail.bossUbCooltime.toBigDecimal().stripTrailingZeros().toPlainString()))
+            }
+        }
+        if (skillDetail.castTime > 0 || (unitType == UnitType.CHARACTER && isNormalSkill)) {
+            add(context.getString(R.string.skill_cast_time, skillDetail.castTime.toBigDecimal().stripTrailingZeros().toPlainString()))
+        }
+    }
+    val copyContent = buildList {
+        add(name)
+        if (metaTexts.isNotEmpty()) add(metaTexts.joinToString("  "))
+        if (tags.isNotEmpty()) add(tags.joinToString(" / "))
+        if (skillDetail.desc.isNotBlank()) add(skillDetail.desc)
+        if (actionData.isNotEmpty()) add(actionData.joinToString("\n") { it.actionDesc })
+    }.joinToString("\n\n")
+
 
 
     Column(
@@ -342,7 +369,23 @@ fun SkillItemContent(
 
         Row {
             //技能图标
-            MainIcon(data = url)
+            MainIcon(
+                data = url,
+                modifier = Modifier.pointerInput(skillDetail.skillId, copyContent) {
+                    detectTapGestures(
+                        onDoubleTap = {
+                            copyText(
+                                context = context,
+                                text = copyContent,
+                                successMessage = context.getString(
+                                    R.string.skill_detail_copy_success,
+                                    name,
+                                ),
+                            )
+                        },
+                    )
+                },
+            )
             Column(
                 modifier = Modifier
                     .padding(horizontal = Dimen.mediumPadding)
@@ -409,7 +452,6 @@ fun SkillItemContent(
         }
 
         //标签
-        val tags = getTags(actionData)
         FlowRow {
             tags.forEach {
                 SkillActionTag(it)
@@ -503,50 +545,52 @@ fun SkillActionItem(
             .clickable(BuildConfig.DEBUG) { expand.value = !expand.value }
     ) {
         //设置字体
-        Text(
-            style = TextStyle(
-                fontWeight = FontWeight.Normal,
-                fontSize = 14.sp,
-                letterSpacing = 0.5.sp
-            ),
-            modifier = Modifier.padding(Dimen.smallPadding),
-            color = MaterialTheme.colorScheme.onSurface,
-            text = buildAnnotatedString {
-                skillAction.actionDesc.forEachIndexed { index, char ->
-                    // 括弧内の色分けを保ちながら、敵スキルの数値・計算記号は標準フォントにする
-                    var markedColor: Color? = null
-                    markDataList.forEach { mark ->
-                        if (mark.indexList.any { index >= it.start && index <= it.end }) {
-                            markedColor = mark.color
+        SelectionContainer {
+            Text(
+                style = TextStyle(
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 14.sp,
+                    letterSpacing = 0.5.sp
+                ),
+                modifier = Modifier.padding(Dimen.smallPadding),
+                color = MaterialTheme.colorScheme.onSurface,
+                text = buildAnnotatedString {
+                    skillAction.actionDesc.forEachIndexed { index, char ->
+                        // 括弧内の色分けを保ちながら、敵スキルの数値・計算記号は標準フォントにする
+                        var markedColor: Color? = null
+                        markDataList.forEach { mark ->
+                            if (mark.indexList.any { index >= it.start && index <= it.end }) {
+                                markedColor = mark.color
+                            }
                         }
-                    }
-                    val useDefaultFont =
-                        (unitType == UnitType.ENEMY || unitType == UnitType.ENEMY_SUMMON) &&
-                                (char.isDigit() || char in ".+-*")
+                        val useDefaultFont =
+                            (unitType == UnitType.ENEMY || unitType == UnitType.ENEMY_SUMMON) &&
+                                    (char.isDigit() || char in ".+-*")
 
-                    when {
-                        markedColor != null && useDefaultFont -> withStyle(
-                            SpanStyle(
-                                color = markedColor,
-                                fontFamily = FontFamily.Default
-                            )
-                        ) {
-                            append(char)
+                        when {
+                            markedColor != null && useDefaultFont -> withStyle(
+                                SpanStyle(
+                                    color = markedColor,
+                                    fontFamily = FontFamily.Default
+                                )
+                            ) {
+                                append(char)
+                            }
+
+                            markedColor != null -> withStyle(SpanStyle(color = markedColor)) {
+                                append(char)
+                            }
+
+                            useDefaultFont -> withStyle(SpanStyle(fontFamily = FontFamily.Default)) {
+                                append(char)
+                            }
+
+                            else -> append(char)
                         }
-
-                        markedColor != null -> withStyle(SpanStyle(color = markedColor)) {
-                            append(char)
-                        }
-
-                        useDefaultFont -> withStyle(SpanStyle(fontFamily = FontFamily.Default)) {
-                            append(char)
-                        }
-
-                        else -> append(char)
                     }
                 }
-            }
-        )
+            )
+        }
         Row(verticalAlignment = Alignment.CenterVertically) {
             //查看召唤物
             if (skillAction.summonUnitId != 0 && toSummonDetail != null) {

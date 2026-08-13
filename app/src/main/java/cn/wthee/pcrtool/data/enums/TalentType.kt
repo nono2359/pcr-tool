@@ -20,6 +20,16 @@ enum class TalentType(val type: Int, val color: Color, val typeNameId: Int) {
     DARK(5, colorPurple, R.string.dark),
     ;
 
+    val iconId: Int
+        get() = when (this) {
+            FIRE -> R.drawable.talent_fire
+            WATER -> R.drawable.talent_water
+            WIND -> R.drawable.talent_wind
+            LIGHT -> R.drawable.talent_light
+            DARK -> R.drawable.talent_dark
+            ALL -> 0
+        }
+
     companion object {
         fun getByType(type: Int) = TalentType.entries
             .find { it.type == type } ?: ALL
