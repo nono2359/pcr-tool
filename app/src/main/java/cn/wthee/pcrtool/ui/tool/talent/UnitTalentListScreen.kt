@@ -39,6 +39,7 @@ import cn.wthee.pcrtool.ui.components.MainSmallFab
 import cn.wthee.pcrtool.ui.components.MainTabRow
 import cn.wthee.pcrtool.ui.components.MainText
 import cn.wthee.pcrtool.ui.components.MainTitleText
+import cn.wthee.pcrtool.ui.components.RoleIcon
 import cn.wthee.pcrtool.ui.components.StateBox
 import cn.wthee.pcrtool.ui.components.TabData
 import cn.wthee.pcrtool.ui.components.Tag
@@ -302,12 +303,9 @@ fun UnitAtkTypeList(
                 // 职能信息
                 if (unit.roleId != 0) {
                     val roleType = RoleType.getByType(unit.roleId)
-                    Tag(
-                        modifier = Modifier
-                            .padding(top = Dimen.exSmallPadding),
-                        text = stringResource(id = roleType.typeNameId),
-                        backgroundColor = roleType.color,
-                        style = MaterialTheme.typography.bodySmall,
+                    RoleIcon(
+                        roleType = roleType,
+                        modifier = Modifier.padding(top = Dimen.exSmallPadding),
                     )
                 }
             } else if (listType == TalentRoleListType.ROLE) {

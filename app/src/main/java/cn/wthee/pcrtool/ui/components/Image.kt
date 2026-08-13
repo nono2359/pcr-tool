@@ -1,5 +1,6 @@
 package cn.wthee.pcrtool.ui.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.size
@@ -16,10 +17,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import cn.wthee.pcrtool.R
 import cn.wthee.pcrtool.data.enums.MainIconType
 import cn.wthee.pcrtool.data.enums.PositionType
+import cn.wthee.pcrtool.data.enums.RoleType
 import cn.wthee.pcrtool.ui.theme.Dimen
 import cn.wthee.pcrtool.ui.theme.adaptiveForegroundColor
 import cn.wthee.pcrtool.utils.VibrateUtil
@@ -111,6 +114,20 @@ fun PositionIcon(
         data = positionIconId,
         size = size,
         modifier = modifier
+    )
+}
+
+@Composable
+fun RoleIcon(
+    roleType: RoleType,
+    modifier: Modifier = Modifier,
+    size: Dp = Dimen.textIconSize,
+) {
+    if (roleType.iconId == 0) return
+    Image(
+        painter = painterResource(roleType.iconId),
+        contentDescription = stringResource(roleType.typeNameId),
+        modifier = modifier.size(size),
     )
 }
 

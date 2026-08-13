@@ -46,6 +46,7 @@ import cn.wthee.pcrtool.utils.deleteSpace
 import cn.wthee.pcrtool.utils.fixedStr
 
 private const val TITLE_WEIGHT = 0.18f
+private const val COMMENT_TYPE_WEIGHT = 0.28f
 private const val CONTENT_WEIGHT = 1 - TITLE_WEIGHT
 /**
  * 角色基本信息
@@ -208,9 +209,9 @@ private fun HomePageCommentContent(
             text = stringResource(id = R.string.title_home_page_comments),
             modifier = Modifier
                 .padding(start = Dimen.smallPadding)
-                .weight(TITLE_WEIGHT)
+                .weight(COMMENT_TYPE_WEIGHT)
         )
-        Spacer(modifier = Modifier.weight(1 - TITLE_WEIGHT * 2))
+        Spacer(modifier = Modifier.weight(1 - TITLE_WEIGHT - COMMENT_TYPE_WEIGHT))
     }
     //多星级时
     if (homePageCommentList.isNotEmpty()) {
@@ -271,9 +272,9 @@ private fun RoomCommentContent(roomCommentList: List<RoomCommentData>) {
             text = stringResource(id = R.string.title_room_comments),
             modifier = Modifier
                 .padding(start = Dimen.smallPadding)
-                .weight(TITLE_WEIGHT)
+                .weight(COMMENT_TYPE_WEIGHT)
         )
-        Spacer(modifier = Modifier.weight(1 - TITLE_WEIGHT * 2))
+        Spacer(modifier = Modifier.weight(1 - TITLE_WEIGHT - COMMENT_TYPE_WEIGHT))
     }
     roomCommentList.let { list ->
         val pagerState = rememberPagerState { list.size }

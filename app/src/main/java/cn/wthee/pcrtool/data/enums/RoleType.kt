@@ -26,6 +26,19 @@ enum class RoleType(val type: Int, val color: Color, val typeNameId: Int) {
     JAMMER(8, colorDeepPink, R.string.jammer),
     ;
 
+    val iconId: Int
+        get() = when (this) {
+            ATTACKER -> R.drawable.role_attacker
+            BREAKER -> R.drawable.role_breaker
+            BUFFER -> R.drawable.role_buffer
+            DEBUFFER -> R.drawable.role_debuffer
+            BOOSTER -> R.drawable.role_booster
+            HEALER -> R.drawable.role_healer
+            TANK -> R.drawable.role_tank
+            JAMMER -> R.drawable.role_jammer
+            ALL -> 0
+        }
+
     companion object {
         fun getByType(type: Int) = entries
             .find { it.type == type } ?: ALL

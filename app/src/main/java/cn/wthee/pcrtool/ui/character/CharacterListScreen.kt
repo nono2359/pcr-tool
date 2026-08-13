@@ -78,6 +78,7 @@ import cn.wthee.pcrtool.ui.components.MainSmallFab
 import cn.wthee.pcrtool.ui.components.MainText
 import cn.wthee.pcrtool.ui.components.MainTitleText
 import cn.wthee.pcrtool.ui.components.PositionIcon
+import cn.wthee.pcrtool.ui.components.RoleIcon
 import cn.wthee.pcrtool.ui.components.RATIO
 import cn.wthee.pcrtool.ui.components.StateBox
 import cn.wthee.pcrtool.ui.components.Subtitle1
@@ -788,22 +789,7 @@ private fun SharedTransitionScope.CharacterIcon(
         //职能
         if (character.roleId != 0) {
             val roleType = RoleType.getByType(character.roleId)
-            Tag(
-                text = when (roleType) {
-                    RoleType.ATTACKER -> "ATCK"
-                    RoleType.BREAKER -> "BRKR"
-                    RoleType.BUFFER -> "BUFF"
-                    RoleType.DEBUFFER -> "DEBF"
-                    RoleType.BOOSTER -> "BSTR"
-                    RoleType.HEALER -> "HEAL"
-                    RoleType.TANK -> "TANK"
-                    RoleType.JAMMER -> "JAMM"
-                    RoleType.ALL -> "ROLE"
-                },
-                backgroundColor = roleType.color,
-                style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp),
-                horizontalPadding = 2.dp,
-            )
+            RoleIcon(roleType = roleType)
         }
 
         //天赋
