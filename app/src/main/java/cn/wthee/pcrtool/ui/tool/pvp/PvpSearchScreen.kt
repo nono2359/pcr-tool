@@ -63,7 +63,7 @@ import cn.wthee.pcrtool.data.model.ResponseData
 import cn.wthee.pcrtool.navigation.navigateUp
 import cn.wthee.pcrtool.ui.MainActivity.Companion.navViewModel
 import cn.wthee.pcrtool.ui.components.CommonSpacer
-import cn.wthee.pcrtool.ui.components.Dot
+import cn.wthee.pcrtool.ui.components.TalentIcon
 import cn.wthee.pcrtool.ui.components.IconTextButton
 import cn.wthee.pcrtool.ui.components.MainIcon
 import cn.wthee.pcrtool.ui.components.MainScaffold
@@ -612,11 +612,9 @@ fun PvpIconItem(
             }
         )
 
-        //天赋（圆点显示）
+        //天赋
         if (pvpCharacterData.talentId != 0) {
-            Dot(
-                color = TalentType.getByType(pvpCharacterData.talentId).color
-            )
+            TalentIcon(talentType = TalentType.getByType(pvpCharacterData.talentId))
         }
 
         //位置
@@ -687,9 +685,7 @@ fun PvpUnitIconLine(
             }
 
             if (talentIdList.isNotEmpty() && talentIdList[index] != 0) {
-                Dot(
-                    color = TalentType.getByType(talentIdList[index]).color
-                )
+                TalentIcon(talentType = TalentType.getByType(talentIdList[index]))
             }
         }
 

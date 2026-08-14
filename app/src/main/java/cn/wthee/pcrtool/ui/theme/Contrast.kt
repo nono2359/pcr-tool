@@ -29,6 +29,24 @@ fun adaptiveForegroundColor(color: Color, minimumContrast: Float = 4.5f): Color 
     return if (towardBlack.second <= towardWhite.second) towardBlack.first else towardWhite.first
 }
 
+@Composable
+fun adaptiveContentColor(
+    backgroundColor: Color,
+    preferredColor: Color = Color.White,
+    minimumContrast: Float = 4.5f,
+): Color {
+    if (!LocalDynamicColorEnabled.current || backgroundColor == Color.Unspecified) {
+        return preferredColor
+    }
+    if (contrastRatio(preferredColor, backgroundColor) >= minimumContrast) {
+        return preferredColor
+    }
+
+    val blackContrast = contrastRatio(Color.Black, backgroundColor)
+    val whiteContrast = contrastRatio(Color.White, backgroundColor)
+    val fallback = if (blackContrast >= whiteContrast) Color.Black else Color.White
+    return fallback.copy(alpha = preferredColor.alpha)
+}
 private fun adjustedColor(
     source: Color,
     target: Color,

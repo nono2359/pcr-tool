@@ -39,6 +39,7 @@ import cn.wthee.pcrtool.ui.skill.ColorTextIndex
 import cn.wthee.pcrtool.ui.theme.CombinedPreviews
 import cn.wthee.pcrtool.ui.theme.Dimen
 import cn.wthee.pcrtool.ui.theme.PreviewLayout
+import cn.wthee.pcrtool.ui.theme.adaptiveContentColor
 import cn.wthee.pcrtool.ui.theme.adaptiveForegroundColor
 import cn.wthee.pcrtool.ui.theme.colorWhite
 import cn.wthee.pcrtool.utils.VibrateUtil
@@ -61,7 +62,7 @@ fun MainTitleText(
     val content: @Composable () -> Unit = {
         Text(
             text = text,
-            color = colorWhite,
+            color = adaptiveContentColor(backgroundColor, colorWhite),
             style = textStyle,
             maxLines = maxLines,
             modifier = (if (selectable) Modifier else modifier)
