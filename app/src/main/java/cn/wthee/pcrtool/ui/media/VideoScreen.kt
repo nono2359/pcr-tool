@@ -3,10 +3,12 @@ package cn.wthee.pcrtool.ui.media
 import android.view.TextureView
 import androidx.annotation.OptIn
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -14,10 +16,18 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Slider
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -81,6 +91,7 @@ import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import java.io.File
+import kotlin.math.roundToInt
 
 /**
  * 视频播放页面
@@ -347,7 +358,7 @@ private fun VideoPreviewDialog(
 /**
  * 播放控制、保存等
  */
-@kotlin.OptIn(ExperimentalLayoutApi::class)
+@kotlin.OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
 private fun ToolButtonContent(
     url: String,
@@ -384,22 +395,31 @@ private fun ToolButtonContent(
 
     //播放进度
     val currentPosition = currentDurationFlow(exoPlayer).collectAsState(initial = 0L).value
+    val videoDuration = exoPlayer?.duration?.takeIf { it > 0 } ?: 0L
+    var seeking by remember(url) { mutableStateOf(false) }
+    var seekPosition by remember(url) { mutableFloatStateOf(0f) }
     //当前进度
     val current =
         (currentPosition / 1000).toString().fillZero(2)
     //视频长度
-    val duration = if (exoPlayer == null || exoPlayer.duration < 0) {
+    val duration = if (videoDuration == 0L) {
         "00"
     } else {
-        (exoPlayer.duration / 1000).toString().fillZero(2)
+        (videoDuration / 1000).toString().fillZero(2)
     }
 
     //播放倍速
     val speedValueList = listOf(
-        0.25f, 0.5f, 0.75f, 1f, 2f, 4f, 8f
+        0.125f, 0.25f, 0.5f, 0.75f, 1f, 2f, 4f, 8f, 12f
     )
+    val customSpeedValues = remember { createCustomSpeedValues() }
     var selectedSpeed by remember(url) {
         mutableFloatStateOf(1f)
+    }
+    val customSpeedDialog = remember { mutableStateOf(false) }
+    var speedBeforeDialog by remember(url) { mutableFloatStateOf(1f) }
+    var customSpeedIndex by remember(url) {
+        mutableFloatStateOf(customSpeedValues.indexOf(1f).toFloat())
     }
     exoPlayer?.setPlaybackSpeed(selectedSpeed)
 
@@ -493,6 +513,64 @@ private fun ToolButtonContent(
         )
     }
 
+    //動画の再生位置。ドラッグ中は自動更新値でつまみを上書きしない
+    Slider(
+        value = if (seeking) seekPosition else currentPosition.toFloat(),
+        onValueChange = {
+            seeking = true
+            seekPosition = it
+        },
+        onValueChangeFinished = {
+            exoPlayer?.seekTo(seekPosition.toLong())
+            seeking = false
+        },
+        valueRange = 0f..videoDuration.coerceAtLeast(1L).toFloat(),
+        enabled = videoDuration > 0L,
+        //つまみはトラック側で描画し、Slider内部のクリップを避ける
+        thumb = { Spacer(modifier = Modifier.size(0.dp)) },
+        track = { sliderState ->
+            val fraction = if (sliderState.valueRange.endInclusive > sliderState.valueRange.start) {
+                (sliderState.value - sliderState.valueRange.start) /
+                    (sliderState.valueRange.endInclusive - sliderState.valueRange.start)
+            } else {
+                0f
+            }.coerceIn(0f, 1f)
+            BoxWithConstraints(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(6.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(3.dp)
+                        .align(Alignment.Center)
+                        .background(
+                            MaterialTheme.colorScheme.primary.copy(alpha = 0.24f),
+                            CircleShape
+                        )
+                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(fraction)
+                        .height(3.dp)
+                        .align(Alignment.CenterStart)
+                        .background(MaterialTheme.colorScheme.primary, CircleShape)
+                )
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.CenterStart)
+                        .offset(x = (maxWidth - 2.dp) * fraction)
+                        .size(width = 2.dp, height = 6.dp)
+                        .background(MaterialTheme.colorScheme.primary, CircleShape)
+                )
+            }
+        },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = Dimen.smallPadding)
+    )
+
     //倍速选择
     FlowRow(
         modifier = Modifier.padding(bottom = Dimen.smallPadding),
@@ -522,7 +600,81 @@ private fun ToolButtonContent(
                 }
             )
         }
+        SelectText(
+            selected = selectedSpeed !in speedValueList,
+            text = stringResource(R.string.video_speed_custom),
+            textStyle = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier
+                .padding(Dimen.smallPadding)
+                .align(Alignment.CenterVertically),
+            margin = 0.dp,
+            onClick = {
+                speedBeforeDialog = selectedSpeed
+                customSpeedIndex = customSpeedValues.indices
+                    .minByOrNull { kotlin.math.abs(customSpeedValues[it] - selectedSpeed) }
+                    ?.toFloat() ?: 0f
+                customSpeedDialog.value = true
+            }
+        )
     }
+
+    MainAlertDialog(
+        openDialog = customSpeedDialog,
+        title = stringResource(R.string.video_speed_custom_title),
+        confirmText = stringResource(R.string.confirm),
+        dismissText = stringResource(R.string.cancel),
+        onDismissRequest = { selectedSpeed = speedBeforeDialog },
+        onConfirm = {
+            selectedSpeed = customSpeedValues[customSpeedIndex.roundToInt()]
+        },
+        content = {
+            val index = customSpeedIndex.roundToInt().coerceIn(customSpeedValues.indices)
+            val customSpeed = customSpeedValues[index]
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    text = "${formatPlaybackSpeed(customSpeed)}x",
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Slider(
+                    value = customSpeedIndex,
+                    onValueChange = {
+                        customSpeedIndex = it.roundToInt().toFloat()
+                        selectedSpeed = customSpeedValues[customSpeedIndex.roundToInt()]
+                    },
+                    valueRange = 0f..customSpeedValues.lastIndex.toFloat(),
+                    steps = customSpeedValues.size - 2,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    TextButton(
+                        enabled = index > 0,
+                        onClick = {
+                            customSpeedIndex = (index - 1).toFloat()
+                            selectedSpeed = customSpeedValues[index - 1]
+                        }
+                    ) { Text("−") }
+                    TextButton(
+                        onClick = {
+                            customSpeedIndex = customSpeedValues.indexOf(1f).toFloat()
+                            selectedSpeed = 1f
+                        }
+                    ) { Text(stringResource(R.string.video_speed_reset)) }
+                    TextButton(
+                        enabled = index < customSpeedValues.lastIndex,
+                        onClick = {
+                            customSpeedIndex = (index + 1).toFloat()
+                            selectedSpeed = customSpeedValues[index + 1]
+                        }
+                    ) { Text("＋") }
+                }
+            }
+        }
+    )
 
 
     //保存确认弹窗
@@ -609,17 +761,34 @@ private fun getVideoFileName(url: String): String {
  * 播放进度
  */
 private fun currentDurationFlow(player: ExoPlayer?) = flow {
-    val offset = 25L
-    if (player != null) {
-        if (player.isPlaying) {
-            while (player.currentPosition + offset <= player.duration) {
-                delay(50L)
-                emit(player.currentPosition + offset)
-            }
-            player.seekToDefaultPosition()
-        }
+    while (player != null) {
+        emit(player.currentPosition.coerceAtLeast(0L))
+        delay(50L)
     }
 }.conflate()
+
+private fun createCustomSpeedValues(): List<Float> = buildList {
+    var value = 0.125f
+    while (value <= 1.0001f) {
+        add(value)
+        value += 0.125f
+    }
+    value = 1.25f
+    while (value <= 4.0001f) {
+        add(value)
+        value += 0.25f
+    }
+    value = 4.5f
+    while (value <= 12.0001f) {
+        add(value)
+        value += 0.5f
+    }
+}
+
+private fun formatPlaybackSpeed(speed: Float): String = when {
+    speed == speed.toInt().toFloat() -> "%.1f".format(speed)
+    else -> speed.toString().trimEnd('0').trimEnd('.')
+}
 
 
 @CombinedPreviews

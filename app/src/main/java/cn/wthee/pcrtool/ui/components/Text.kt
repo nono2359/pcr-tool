@@ -308,7 +308,7 @@ fun SelectText(
     }
     Text(
         text = text,
-        color = if (selected) colorWhite else textColor,
+        color = if (selected) adaptiveContentColor(selectedColor, colorWhite) else textColor,
         style = textStyle,
         maxLines = 1,
         textAlign = textAlign,

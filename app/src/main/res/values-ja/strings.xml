@@ -938,6 +938,9 @@
 
     <!-- 動画再生 -->
     <string name="video_play_speed">倍速：</string>
+    <string name="video_speed_custom">カスタム</string>
+    <string name="video_speed_custom_title">再生速度のカスタム設定</string>
+    <string name="video_speed_reset">1.0x に戻す</string>
     <string name="play_error">再生エラーまたはリソースが存在しません</string>
     <string name="video_resource_error">リソースが存在しません</string>
     <string name="save_video">ビデオを保存する</string>

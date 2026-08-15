@@ -19,6 +19,7 @@ import cn.wthee.pcrtool.data.model.KeywordData
 import cn.wthee.pcrtool.ui.theme.CombinedPreviews
 import cn.wthee.pcrtool.ui.theme.Dimen
 import cn.wthee.pcrtool.ui.theme.PreviewLayout
+import cn.wthee.pcrtool.ui.theme.adaptiveContentColor
 import cn.wthee.pcrtool.ui.theme.colorPurple
 import cn.wthee.pcrtool.ui.theme.colorWhite
 import cn.wthee.pcrtool.utils.VibrateUtil
@@ -94,6 +95,7 @@ fun MainChip(
     selectedColor: Color?
 ) {
     val context = LocalContext.current
+    val selectedContainerColor = selectedColor ?: MaterialTheme.colorScheme.primary
 
     ElevatedFilterChip(
         selected = selected,
@@ -104,14 +106,14 @@ fun MainChip(
         modifier = modifier,
         colors = FilterChipDefaults.elevatedFilterChipColors(
             containerColor = MaterialTheme.colorScheme.surface,
-            selectedContainerColor = selectedColor ?: MaterialTheme.colorScheme.primary
+            selectedContainerColor = selectedContainerColor
         ),
         label = {
             CaptionText(
                 text = text,
                 color = if (selected) {
                     //选中字体颜色
-                    colorWhite
+                    adaptiveContentColor(selectedContainerColor, colorWhite)
                 } else {
                     //未选中字体颜色
                     selectedColor ?: MaterialTheme.colorScheme.onSurface

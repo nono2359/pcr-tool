@@ -938,6 +938,9 @@
 
     <!-- 视频播放 -->
     <string name="video_play_speed">倍速:</string>
+    <string name="video_speed_custom">Custom</string>
+    <string name="video_speed_custom_title">Custom playback speed</string>
+    <string name="video_speed_reset">Reset to 1.0x</string>
     <string name="play_error">播放出错或资源不存在</string>
     <string name="video_resource_error">资源不存在</string>
     <string name="save_video">保存视频</string>
